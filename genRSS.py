@@ -5,11 +5,6 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 
 Copyright (C) 2014 Amine SEHILI <amine.sehili@gmail.com>
 
-genRSS takes a directory hosted under your web site
-and generates an RSS 2 feed for all media files within the directory.
-It can operate recursively and look for media files in sub directories.
-Media files can also be restricted to a given set of extensions.
-
 
 genRSS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -120,7 +115,7 @@ def getFiles(dirname, extensions=None, recursive=False):
 
 def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
     '''
-    Generate an RSS 2 item and return i as a string.
+    Generate a RSS 2 item and return it as a string.
     
     Parameters
     ----------
@@ -139,13 +134,13 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                  Default = "" 
                  
     pubDate : string
-              Date of publication of the item. Should follow the RFC822 format, otherwise the feed will not pass a validator.
-              This method doses (yet) not check the compatibility of pubDate. Here are a few examples of correct RFC822 dates:
+              Date of publication of the item. Should follow the RFC-822 format, otherwise the feed will not pass a validator.
+              This method doses (yet) not check the compatibility of pubDate. Here are a few examples of correct RFC-822 dates:
 
               - "Wed, 02 Oct 2002 08:00:00 EST"
               - "Mon, 22 Dec 2014 18:30:00 +0000"
 
-              You can use the following code to gererate a RFF822 valid time:
+              You can use the following code to gererate a RFC-822 valid time:
               time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
               Default = None (no pubDate tag will be added to the generated item)
               
@@ -155,7 +150,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     
     extraTags : a dictionary
                    A dictionary of elements that the user to add to an item (e.g. non standard tags)
-                   Eche key:value of the dictionary will be used to generate an element of the form:
+                   Each key:value of the dictionary will be used to generate an element of the form:
                    <key>value</key>
     
     Returns
