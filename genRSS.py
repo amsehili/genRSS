@@ -5,7 +5,6 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 
 Copyright (C) 2014 Amine SEHILI <amine.sehili@gmail.com>
 
-
 genRSS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
 the Free Software Foundation, either version 3 of the License, or
@@ -27,7 +26,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @license:    GNU GPL v02
 
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: Dec 23rd 2014
+@deffield    updated: Dec 24th 2014
 '''
 
 import sys
@@ -43,7 +42,7 @@ from optparse import OptionParser
 __all__ = []
 __version__ = 0.1
 __date__ = '2014-11-01'
-__updated__ = '2014-12-23'
+__updated__ = '2014-12-24'
 
 DEBUG = 0
 TESTRUN = 0
@@ -79,16 +78,23 @@ def getFiles(dirname, extensions=None, recursive=False):
     
     Examples
     --------
-    >>> getFiles("media")
-    ['media/1.mp3', 'media/1.mp4', 'media/1.ogg', 'media/2.MP3']
-    >>> getFiles("media", recursive=True)
-    ['media/1.mp3', 'media/1.mp4', 'media/1.ogg', 'media/2.MP3', 'media/subdir_1/2.MP4', 'media/subdir_1/3.mp3', 'media/subdir_1/4.mp3', 'media/subdir_2/4.mp4', 'media/subdir_2/5.mp3', 'media/subdir_2/6.mp3']
-    >>> getFiles("media", extensions=["mp3"])
-    ['media/1.mp3', 'media/2.MP3']
-    >>> getFiles("media", extensions=["mp3", "ogg"], recursive=True)
-    ['media/1.mp3', 'media/1.ogg', 'media/2.MP3', 'media/subdir_1/3.mp3', 'media/subdir_1/4.mp3', 'media/subdir_2/5.mp3', 'media/subdir_2/6.mp3']
-    >>> getFiles("media", extensions=["mp4"], recursive=True)
-    ['media/1.mp4', 'media/subdir_1/2.MP4', 'media/subdir_2/4.mp4']
+    >>> import os
+    >>> m = "test{0}media{0}".format(os.sep)
+    >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3']".format(m)
+    >>> str(getFiles("{0}".format(m))) == expected
+    True
+    >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}2.MP4', '{0}subdir_1{1}3.mp3', '{0}subdir_1{1}4.mp3', '{0}subdir_2{1}4.mp4', '{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']".format(m, os.sep)
+    >>> str(getFiles("{0}".format(m), recursive=True)) == expected
+    True
+    >>> expected = "['{0}1.mp3', '{0}2.MP3']".format(m)
+    >>> str(getFiles("{0}".format(m), extensions=["mp3"])) == expected
+    True
+    >>> expected = "['{0}1.mp3', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}3.mp3', '{0}subdir_1{1}4.mp3', '{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']".format(m, os.sep)
+    >>> str(getFiles("{0}".format(m), extensions=["mp3", "ogg"], recursive=True)) == expected
+    True
+    >>> expected = "['{0}1.mp4', '{0}subdir_1{1}2.MP4', '{0}subdir_2{1}4.mp4']".format(m, os.sep)
+    >>> str(getFiles("{0}".format(m), extensions=["mp4"], recursive=True)) == expected
+    True
     '''
     
     if dirname[-1] != os.sep:
