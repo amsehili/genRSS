@@ -21,9 +21,9 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @author:     Amine SEHILI
             
-@copyright:  2014 Amine Sehili
+@copyright:  2014-2015 Amine Sehili
             
-@license:    GNU GPL v02
+@license:    GNU GPL v03
 
 @contact:    amine.sehili <AT> gmail.com
 @deffield    updated: Dec 24th 2014
@@ -35,14 +35,14 @@ import glob
 import fnmatch
 import time
 import urllib
-
+import mimetypes
 
 from optparse import OptionParser
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2014-11-01'
-__updated__ = '2014-12-24'
+__updated__ = '2015-01-17'
 
 DEBUG = 0
 TESTRUN = 0
@@ -53,7 +53,7 @@ PROFILE = 0
 
 def getFiles(dirname, extensions=None, recursive=False):
     '''
-    Return the list of files in a given directory.
+    Return the list of files (relative paths, starting from dirname) in a given directory.
     
     Unless a list of the desired file extensions is given, all files in dirname are returned.
     If recursive = True, also look for files in sub directories of direname.
@@ -154,10 +154,24 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
              A string of white spaces used to indent the elements of the item.
              3 * len(indent) white spaces will be left before <guid>, <link>, <title> and <description> and 2 * len(indent) before item.
     
-    extraTags : a dictionary
-                   A dictionary of elements that the user to add to an item (e.g. non standard tags)
-                   Each key:value of the dictionary will be used to generate an element of the form:
-                   <key>value</key>
+    extraTags : a list of dictionaries
+                Each dictionary contains the following keys
+                - "name": name of the tag (mandatory)
+                - "value": value of the tag (optional)
+                - "params": parameters of the tag (optional)
+                
+                Example:
+                -------
+                The following dictionary:
+                   {"name" : enclosure, "value" : None, "params" : 'url="file.mp3" type="audio/mpeg" length="1234"'}
+                will give this tag:
+                   <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
+                   
+               whereas this dictionary:
+                   {"name" : "aTag", "value" : "aValue", "params" : None}
+                would give this tag:
+                   <aTag>aValue</aTag>
+                
     
     Returns
     -------
@@ -175,7 +189,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
              <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
           </item>
           
-    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ", extraTags={"itunes:duration" : "06:08"})
+    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ", extraTags=[{"name":"itunes:duration" , "value" : "06:08"}])
     >>> print(item)
       <item>
        <guid>my/web/site/media/item2</guid>
@@ -184,13 +198,23 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <description></description>
        <itunes:duration>06:08</itunes:duration>
       </item>
+      
+    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ", extraTags=[{"name":"enclosure" , "params" : 'url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"'}])
+    >>> print(item)
+      <item>
+       <guid>my/web/site/media/item2</guid>
+       <link>my/web/site/media/item2</link>
+       <title>Title of item 2</title>
+       <description></description>
+       <enclosure url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"/>
+      </item>
     
     '''
     
     
     if guid is None:
         guid = link
-  
+    
     guid =  "{0}<guid>{1}</guid>\n".format(indent * 3, guid)
     link = "{0}<link>{1}</link>\n".format(indent * 3, link)
     title = "{0}<title>{1}</title>\n".format(indent * 3, title)
@@ -203,10 +227,18 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     
     extra = ""
     if extraTags is not None:
-        for key,value in extraTags.items():
-            extra += "{0}<{1}>{2}</{3}>\n".format(indent * 3, key, value, key)
+        for tag in extraTags:
+            name = tag["name"]
+            value = None if not tag.has_key("value") else tag["value"]
+            params = None if not tag.has_key("params") else tag["params"]
+            
+            extra += "{0}<{1}{2}".format(indent * 3, name, " " + params if params is not None else "")
+            extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
+            
+            
     
-    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{7}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra, indent * 2)
+    
+    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra)
     
     
     
@@ -221,7 +253,7 @@ def main(argv=None):
     program_version_string = '%%prog %s (%s)' % (program_version, program_build_date)
     #program_usage = '''usage: spam two eggs''' # optional - will be autogenerated by optparse
     program_longdesc = '''''' # optional - give further explanation about what the program does
-    program_license = "Copyright 2014 Amine SEHILI. Licensed under the GNU CPL v02"
+    program_license = "Copyright 2014 Amine SEHILI. Licensed under the GNU CPL v03"
  
     if argv is None:
         argv = sys.argv[1:]
@@ -239,7 +271,7 @@ def main(argv=None):
            mywebsite                          \n \
            192.168.1.12:8080                  \n \
            192.168.1.12:8080/media/JapaneseLessons \n \
-           http://192.168.1.12/media/JapaneseLessons \n", metavar="URL")
+           http://192.168.1.12/media/JapaneseLessons \n", default="http://localhost:8080",  metavar="URL")
         parser.add_option("-i", "--image", dest="image", help="Feed image as a http(s) url or a relative path [default: None]", default = None, metavar="URL or RELATIVE_PATH")
         
         
@@ -296,7 +328,7 @@ def main(argv=None):
             # get files date of creation in seconds
             pubDates = [os.path.getctime(f) for f in fileNames]
             # most feed readers will use pubDate to sort items even if they are not sorted in the output file
-            # nevertheless, we sort fileNames according to pubDates in the feed.
+            # for readability, we also sort fileNames according to pubDates in the feed.
             sortedFiles = sorted(zip(fileNames, pubDates),key=lambda f: - f[1])
         
         else:
@@ -306,19 +338,30 @@ def main(argv=None):
             # f is a random number of seconds between 0 and 10 (float)
             now = time.time()
             import random
-            pubDates = [now - (60 * d + (random.random() * 10)) for d in xrange(len(fileNames))]
+            pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in xrange(len(fileNames))]
             sortedFiles = zip(fileNames, pubDates)
         
                
         # write dates in RFC-822 format
-        sortedFiles = map(lambda f : (f[0], time.strftime("%a, %d %b %Y %H:%M:%S -0000", time.localtime(f[1])) ), sortedFiles)
+        sortedFiles = map(lambda f : (f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(f[1])) ), sortedFiles)
+        
+        #b = os.path.getsize("/path/isa_005.mp3")
         
         # build items    
         items = []
         for f in sortedFiles:
             fname, pdate = f
             fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
-            items.append(buildItem(link= fileURL, title=os.path.basename(fname) , guid=fileURL, description=os.path.basename(fname), pubDate=pdate))
+            fileMimeType = mimetypes.guess_type(fname)[0]
+            
+            if "audio" in fileMimeType or "video" in fileMimeType:
+                tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
+                enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
+            else:
+                enclosure = None
+            
+            
+            items.append(buildItem(link= fileURL, title=os.path.basename(fname) , guid=fileURL, description=os.path.basename(fname), pubDate=pdate, extraTags=[enclosure]))
             
                     
         if opts.outfile is not None:
