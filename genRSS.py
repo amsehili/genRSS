@@ -410,7 +410,7 @@ def main(argv=None):
 if __name__ == "__main__":
     if DEBUG:
         sys.argv.append("-h")
-    if TESTRUN:
+    if TESTRUN or "--run-tests" in sys.argv:
         import doctest
         doctest.testmod()
     if PROFILE:
