@@ -241,6 +241,37 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra)
     
     
+def fileToItem(host, fname, pubDate):
+    '''
+    Inspect a file name to determine what kind of RSS item to build, and
+    return the built item.
+
+    Parameters
+    ----------
+    host : string
+           The hostname and directory to use for the link.
+
+    fname : string
+            File name to inspect.
+
+    pubDate : string
+              Publication date in RFC 822 format.
+
+    Returns
+    -------
+    A string representing an RSS item, as with buildItem.
+    '''
+
+    fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
+    fileMimeType = mimetypes.guess_type(fname)[0]
+
+    if "audio" in fileMimeType or "video" in fileMimeType:
+        tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
+        enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
+    else:
+        enclosure = None
+
+    return buildItem(link=fileURL, title=os.path.basename(fname), guid=fileURL, description=os.path.basename(fname), pubDate=pubDate, extraTags=[enclosure])
     
     
 def main(argv=None):
@@ -348,22 +379,8 @@ def main(argv=None):
         #b = os.path.getsize("/path/isa_005.mp3")
         
         # build items    
-        items = []
-        for f in sortedFiles:
-            fname, pdate = f
-            fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
-            fileMimeType = mimetypes.guess_type(fname)[0]
-            
-            if "audio" in fileMimeType or "video" in fileMimeType:
-                tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
-                enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
-            else:
-                enclosure = None
-            
-            
-            items.append(buildItem(link= fileURL, title=os.path.basename(fname) , guid=fileURL, description=os.path.basename(fname), pubDate=pdate, extraTags=[enclosure]))
-            
-                    
+        items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
+
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
         else:
