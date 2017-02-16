@@ -228,6 +228,9 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     extra = ""
     if extraTags is not None:
         for tag in extraTags:
+            if tag is None:
+                continue
+
             name = tag["name"]
             value = None if not tag.has_key("value") else tag["value"]
             params = None if not tag.has_key("params") else tag["params"]
