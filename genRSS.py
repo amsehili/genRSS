@@ -296,7 +296,7 @@ def fileToItem(host, fname, pubDate):
     fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
     fileMimeType = mimetypes.guess_type(fname)[0]
 
-    if "audio" in fileMimeType or "video" in fileMimeType:
+    if fileMimeType is not None and ("audio" in fileMimeType or "video" in fileMimeType):
         tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
         enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
     else:
