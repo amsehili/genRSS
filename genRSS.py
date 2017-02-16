@@ -260,6 +260,34 @@ def fileToItem(host, fname, pubDate):
     Returns
     -------
     A string representing an RSS item, as with buildItem.
+
+    Examples
+    --------
+    >>> print fileToItem('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000')
+          <item>
+             <guid>example.com/test/media/1.mp3</guid>
+             <link>example.com/test/media/1.mp3</link>
+             <title>1.mp3</title>
+             <description>1.mp3</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+             <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
+          </item>
+    >>> print fileToItem('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000')
+          <item>
+             <guid>example.com/test/invalid/checksum.md5</guid>
+             <link>example.com/test/invalid/checksum.md5</link>
+             <title>checksum.md5</title>
+             <description>checksum.md5</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+          </item>
+    >>> print fileToItem('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000')
+          <item>
+             <guid>example.com/test/invalid/windows.exe</guid>
+             <link>example.com/test/invalid/windows.exe</link>
+             <title>windows.exe</title>
+             <description>windows.exe</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+          </item>
     '''
 
     fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
