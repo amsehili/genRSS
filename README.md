@@ -46,5 +46,15 @@ localhost:8080 are you host name and your http server port respectively. This pa
 **Example:**
 
     python genRSS.py -e "mp3,ogg" -d test/media --host 192.168.1.5:8080 --title "My Podcast" --description "My Podcast Description" --recursive -o feed-1.rss
-    
+
+### Tests
+
+To run tests type:
+
+    python genRSS.py --run-tests
+
+or in verbose mode:
+
+    python genRSS.py --run-tests -v
+
 Wiki: https://github.com/amsehili/genRSS/wiki
