@@ -228,6 +228,9 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     extra = ""
     if extraTags is not None:
         for tag in extraTags:
+            if tag is None:
+                continue
+
             name = tag["name"]
             value = None if not tag.has_key("value") else tag["value"]
             params = None if not tag.has_key("params") else tag["params"]
@@ -241,6 +244,65 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra)
     
     
+def fileToItem(host, fname, pubDate):
+    '''
+    Inspect a file name to determine what kind of RSS item to build, and
+    return the built item.
+
+    Parameters
+    ----------
+    host : string
+           The hostname and directory to use for the link.
+
+    fname : string
+            File name to inspect.
+
+    pubDate : string
+              Publication date in RFC 822 format.
+
+    Returns
+    -------
+    A string representing an RSS item, as with buildItem.
+
+    Examples
+    --------
+    >>> print fileToItem('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000')
+          <item>
+             <guid>example.com/test/media/1.mp3</guid>
+             <link>example.com/test/media/1.mp3</link>
+             <title>1.mp3</title>
+             <description>1.mp3</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+             <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
+          </item>
+    >>> print fileToItem('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000')
+          <item>
+             <guid>example.com/test/invalid/checksum.md5</guid>
+             <link>example.com/test/invalid/checksum.md5</link>
+             <title>checksum.md5</title>
+             <description>checksum.md5</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+          </item>
+    >>> print fileToItem('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000')
+          <item>
+             <guid>example.com/test/invalid/windows.exe</guid>
+             <link>example.com/test/invalid/windows.exe</link>
+             <title>windows.exe</title>
+             <description>windows.exe</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+          </item>
+    '''
+
+    fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
+    fileMimeType = mimetypes.guess_type(fname)[0]
+
+    if fileMimeType is not None and ("audio" in fileMimeType or "video" in fileMimeType):
+        tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
+        enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
+    else:
+        enclosure = None
+
+    return buildItem(link=fileURL, title=os.path.basename(fname), guid=fileURL, description=os.path.basename(fname), pubDate=pubDate, extraTags=[enclosure])
     
     
 def main(argv=None):
@@ -348,22 +410,8 @@ def main(argv=None):
         #b = os.path.getsize("/path/isa_005.mp3")
         
         # build items    
-        items = []
-        for f in sortedFiles:
-            fname, pdate = f
-            fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
-            fileMimeType = mimetypes.guess_type(fname)[0]
-            
-            if "audio" in fileMimeType or "video" in fileMimeType:
-                tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
-                enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
-            else:
-                enclosure = None
-            
-            
-            items.append(buildItem(link= fileURL, title=os.path.basename(fname) , guid=fileURL, description=os.path.basename(fname), pubDate=pdate, extraTags=[enclosure]))
-            
-                    
+        items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
+
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
         else:
@@ -410,7 +458,7 @@ def main(argv=None):
 if __name__ == "__main__":
     if DEBUG:
         sys.argv.append("-h")
-    if TESTRUN:
+    if TESTRUN or "--run-tests" in sys.argv:
         import doctest
         doctest.testmod()
     if PROFILE:
