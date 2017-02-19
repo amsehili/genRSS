@@ -18,13 +18,9 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
-
 @author:     Amine SEHILI
-            
 @copyright:  2014-2015 Amine Sehili
-            
 @license:    GNU GPL v03
-
 @contact:    amine.sehili <AT> gmail.com
 @deffield    updated: Dec 24th 2014
 '''
@@ -47,8 +43,6 @@ __updated__ = '2015-01-17'
 DEBUG = 0
 TESTRUN = 0
 PROFILE = 0
-
-
 
 
 def getFiles(dirname, extensions=None, recursive=False):
@@ -118,7 +112,6 @@ def getFiles(dirname, extensions=None, recursive=False):
     return sorted(set(selectedFiles))
 
 
-
 def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
     '''
     Generate a RSS 2 item and return it as a string.
@@ -172,7 +165,6 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                 would give this tag:
                    <aTag>aValue</aTag>
                 
-    
     Returns
     -------
     A string representing a RSS 2 item.
@@ -211,7 +203,6 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     
     '''
     
-    
     if guid is None:
         guid = link
     
@@ -238,9 +229,6 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
             extra += "{0}<{1}{2}".format(indent * 3, name, " " + params if params is not None else "")
             extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
             
-            
-    
-    
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra)
     
     
@@ -306,7 +294,6 @@ def fileToItem(host, fname, pubDate):
     
     
 def main(argv=None):
-    '''Command line options.'''
     
     program_name = os.path.basename(sys.argv[0])
     program_version = "v0.1"
@@ -336,19 +323,15 @@ def main(argv=None):
            http://192.168.1.12/media/JapaneseLessons \n", default="http://localhost:8080",  metavar="URL")
         parser.add_option("-i", "--image", dest="image", help="Feed image as a http(s) url or a relative path [default: None]", default = None, metavar="URL or RELATIVE_PATH")
         
-        
-        
         parser.add_option("-t", "--title", dest="title", help="Title of the podcast [Defaule:None]", default=None, metavar="STRING")
         parser.add_option("-p", "--description", dest="description", help="Description of the [Defaule:None]", default=None, metavar="STRING")
         parser.add_option("-C", "--sort-creation", dest="sort_creation", help="Sort files by date of creation instead of name (default) and current date", action="store_true", default=False)
         
         parser.add_option("-v", "--verbose", dest="verbose", action="count", help="set verbosity level [default: %default]")
         
-        
         # process options
         (opts, args) = parser.parse_args(argv)
         
-                 
         if opts.dirname is None or opts.host is None:
             raise Exception("Usage: python %s -d directory -H hostname [-o output -r]\n   For more information run %s --help\n" % (program_name,program_name))
         
@@ -403,11 +386,8 @@ def main(argv=None):
             pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in xrange(len(fileNames))]
             sortedFiles = zip(fileNames, pubDates)
         
-               
         # write dates in RFC-822 format
         sortedFiles = map(lambda f : (f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(f[1])) ), sortedFiles)
-        
-        #b = os.path.getsize("/path/isa_005.mp3")
         
         # build items    
         items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
@@ -436,16 +416,12 @@ def main(argv=None):
             outfp.write("         <link>{0}</link>\n".format(link))
             outfp.write("      </image>\n")
             
-            
-         
         for item in items:
             outfp.write(item + "\n")
                 
         outfp.write('')
         outfp.write('   </channel>\n')
         outfp.write('</rss>\n')
-        
-        
         
         if outfp != sys.stdout:
             outfp.close()
