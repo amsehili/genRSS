@@ -19,7 +19,7 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 
 @author:     Amine SEHILI
-@copyright:  2014-2015 Amine Sehili
+@copyright:  2014-2017 Amine Sehili
 @license:    GNU GPL v03
 @contact:    amine.sehili <AT> gmail.com
 @deffield    updated: Dec 24th 2014
@@ -38,7 +38,7 @@ from optparse import OptionParser
 __all__ = []
 __version__ = 0.1
 __date__ = '2014-11-01'
-__updated__ = '2015-01-17'
+__updated__ = '2017-02-19'
 
 DEBUG = 0
 TESTRUN = 0
