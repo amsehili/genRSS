@@ -149,18 +149,19 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     
     extraTags : a list of dictionaries
                 Each dictionary contains the following keys
-                - "name": name of the tag (mandatory)
+                - "na1me": name of the tag (mandatory)
                 - "value": value of the tag (optional)
-                - "params": parameters of the tag (optional)
+                - "params": string or list of string, parameters of the tag (optional)
                 
                 Example:
                 -------
-                The following dictionary:
+                Either of the following two dictionaries:
                    {"name" : enclosure, "value" : None, "params" : 'url="file.mp3" type="audio/mpeg" length="1234"'}
+                   {"name" : enclosure, "value" : None, "params" : ['url="file.mp3"', 'type="audio/mpeg"', 'length="1234"']}
                 will give this tag:
                    <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
-                   
-               whereas this dictionary:
+
+                whereas this dictionary:
                    {"name" : "aTag", "value" : "aValue", "params" : None}
                 would give this tag:
                    <aTag>aValue</aTag>
@@ -171,7 +172,9 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     
     Examples
     --------
-    >>> item = buildItem("my/web/site/media/item1", title = "Title of item 1", guid = "item1", description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000", indent = "   ")
+    >>> item = buildItem("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
+    ...                  description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000",
+    ...                  indent = "   ")
     >>> print(item)
           <item>
              <guid>item1</guid>
@@ -181,7 +184,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
              <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
           </item>
           
-    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ", extraTags=[{"name":"itunes:duration" , "value" : "06:08"}])
+    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+    ...                  extraTags=[{"name" : "itunes:duration" , "value" : "06:08"}])
     >>> print(item)
       <item>
        <guid>my/web/site/media/item2</guid>
@@ -191,7 +195,10 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <itunes:duration>06:08</itunes:duration>
       </item>
       
-    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ", extraTags=[{"name":"enclosure" , "params" : 'url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"'}])
+    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+    ...                  extraTags=[{"name" : "enclosure" ,
+    ...                              "params" : 'url="http://example.com/media/file.mp3"'
+    ...                                         ' type="audio/mpeg" length="1234"'}])
     >>> print(item)
       <item>
        <guid>my/web/site/media/item2</guid>
@@ -200,7 +207,19 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <description></description>
        <enclosure url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"/>
       </item>
-    
+
+    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+    ...                  extraTags= [{"name" : "enclosure", "value" : None,
+    ...                               "params" :  ['url="file.mp3"', 'type="audio/mpeg"',
+    ...                                            'length="1234"']}]) 
+    >>> print(item)
+      <item>
+       <guid>my/web/site/media/item2</guid>
+       <link>my/web/site/media/item2</link>
+       <title>Title of item 2</title>
+       <description></description>
+       <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
+      </item>
     '''
     
     if guid is None:
@@ -223,10 +242,16 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                 continue
 
             name = tag["name"]
-            value = None if not tag.has_key("value") else tag["value"]
-            params = None if not tag.has_key("params") else tag["params"]
-            
-            extra += "{0}<{1}{2}".format(indent * 3, name, " " + params if params is not None else "")
+            value = tag.get("value", None)
+            params = tag.get("params", '')
+            if params is None:
+               params = ''
+            if isinstance(params, (list)):
+               params = " ".join(params)
+            if len(params) > 0:
+               params = " " + params
+                           
+            extra += "{0}<{1}{2}".format(indent * 3, name, params)
             extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
             
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra)
