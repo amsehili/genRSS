@@ -488,6 +488,7 @@ if __name__ == "__main__":
     if TESTRUN or "--run-tests" in sys.argv:
         import doctest
         doctest.testmod()
+        sys.exit(0)
     if PROFILE:
         import cProfile
         import pstats
