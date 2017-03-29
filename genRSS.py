@@ -133,8 +133,10 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                  Default = "" 
                  
     pubDate : string
-              Date of publication of the item. Should follow the RFC-822 format, otherwise the feed will not pass a validator.
-              This method doses (yet) not check the compatibility of pubDate. Here are a few examples of correct RFC-822 dates:
+              Date of publication of the item. Should follow the RFC-822 format,
+              otherwise the feed will not pass a validator.
+              This method doses (yet) not check the compatibility of pubDate.
+              Here are a few examples of correct RFC-822 dates:
 
               - "Wed, 02 Oct 2002 08:00:00 EST"
               - "Mon, 22 Dec 2014 18:30:00 +0000"
@@ -145,7 +147,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
               
     indent : string
              A string of white spaces used to indent the elements of the item.
-             3 * len(indent) white spaces will be left before <guid>, <link>, <title> and <description> and 2 * len(indent) before item.
+             3 * len(indent) white spaces will be left before <guid>, <link>, <title> and <description>
+             and 2 * len(indent) before item.
     
     extraTags : a list of dictionaries
                 Each dictionary contains the following keys
@@ -254,7 +257,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
             extra += "{0}<{1}{2}".format(indent * 3, name, params)
             extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
             
-    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title, descrption, pubDate, extra)
+    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title,
+                                                            descrption, pubDate, extra)
     
     
 def fileToItem(host, fname, pubDate):
@@ -315,7 +319,9 @@ def fileToItem(host, fname, pubDate):
     else:
         enclosure = None
 
-    return buildItem(link=fileURL, title=os.path.basename(fname), guid=fileURL, description=os.path.basename(fname), pubDate=pubDate, extraTags=[enclosure])
+    return buildItem(link=fileURL, title=os.path.basename(fname),
+                     guid=fileURL, description=os.path.basename(fname),
+                     pubDate=pubDate, extraTags=[enclosure])
     
     
 def main(argv=None):
@@ -334,34 +340,53 @@ def main(argv=None):
     try:
         # setup option parser
         parser = OptionParser(version=program_version_string, epilog=program_longdesc, description=program_license)
-        parser.add_option("-d", "--dirname", dest="dirname", help="Directory to look for media files in. This directory name will be append to your host name to create absolute paths to your media files.", metavar="RELATIVE_PATH")
-        parser.add_option("-r", "--recursive", dest="recursive", help="Look for media files recursively in sub directories ? [Default:False]", action="store_true", default=False)
-        parser.add_option("-e", "--extensions", dest="extensions", help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg) [Default:None => all files]", type="string", default=None, metavar="STRING")
+        parser.add_option("-d", "--dirname", dest="dirname",
+                           help=" ".join(["Directory to look for media files in.",
+                                         "This directory name will be append to",
+                                         "your host name to create absolute paths to your media files."]),
+                           metavar="RELATIVE_PATH")
+        parser.add_option("-r", "--recursive", dest="recursive",
+                          help="Look for media files recursively in sub directories? [Default:False]",
+                          action="store_true", default=False)
+        parser.add_option("-e", "--extensions", dest="extensions",
+                          help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg) [Default: all files]",
+                          type="string", default=None, metavar="STRING")
         
         parser.add_option("-o", "--out", dest="outfile", help="Output RSS file [default: stdout]", metavar="FILE")
-        parser.add_option("-H", "--host", dest="host", help="Host name (or IP address), possibly with a path to the base directory where your media directory is located\
-        Examples of host names:\
-           mywebsite.com/media/JapaneseLessons\n \
-           mywebsite                          \n \
-           192.168.1.12:8080                  \n \
-           192.168.1.12:8080/media/JapaneseLessons \n \
-           http://192.168.1.12/media/JapaneseLessons \n", default="http://localhost:8080",  metavar="URL")
-        parser.add_option("-i", "--image", dest="image", help="Feed image as a http(s) url or a relative path [default: None]", default = None, metavar="URL or RELATIVE_PATH")
+        parser.add_option("-H", "--host", dest="host", help=" ".join(["Host name (or IP address), possibly with a"
+                                                                    "path to the base directory where your media",
+                                                                    "directory is located."]) + 
+                                                            "\n".join([" Examples of host names:",
+                                                                       "mywebsite.com/media/JapaneseLessons",
+                                                                       "mywebsite",
+                                                                       "192.168.1.12:8080",
+                                                                       "localhost:8080/media/JapaneseLessons"
+                                                                       "http://192.168.1.12/media/JapaneseLessons"]),
+                          default="http://localhost:8080",  metavar="URL")
+        parser.add_option("-i", "--image", dest="image",
+                          help="Feed image as a http(s) url or a relative path [default: None]",
+                          default = None, metavar="URL or RELATIVE_PATH")
         
-        parser.add_option("-t", "--title", dest="title", help="Title of the podcast [Defaule:None]", default=None, metavar="STRING")
-        parser.add_option("-p", "--description", dest="description", help="Description of the [Defaule:None]", default=None, metavar="STRING")
-        parser.add_option("-C", "--sort-creation", dest="sort_creation", help="Sort files by date of creation instead of name (default) and current date", action="store_true", default=False)
-        
-        parser.add_option("-v", "--verbose", dest="verbose", action="count", help="set verbosity level [default: %default]")
+        parser.add_option("-t", "--title", dest="title", help="Title of the podcast [Defaule:None]",
+                          default=None, metavar="STRING")
+        parser.add_option("-p", "--description", dest="description", help="Description of the [Defaule:None]",
+                          default=None, metavar="STRING")
+        parser.add_option("-C", "--sort-creation", dest="sort_creation",
+                          help="Sort files by date of creation instead of name (default) and current date",
+                          action="store_true", default=False)
+        parser.add_option("-v", "--verbose", dest="verbose", action="count",
+                          help="set verbosity level [default: %default]")
         
         # process options
         (opts, args) = parser.parse_args(argv)
         
         if opts.dirname is None or opts.host is None:
-            raise Exception("Usage: python %s -d directory -H hostname [-o output -r]\n   For more information run %s --help\n" % (program_name,program_name))
+            raise Exception("\n".join(["Usage: python %s -d directory -H hostname [-o output -r]",
+                                       "For more information run %s --help\n" % (program_name,program_name)]))
         
         if not os.path.isdir(opts.dirname) or not os.path.exists(opts.dirname):
-            raise Exception("Cannot find directory {0}\n--direname must be a relative path to an existing directory".format(opts.dirname))
+            raise Exception("\n".join["Cannot find directory {0}",
+                            "--direname must be a relative path to an existing directory".format(opts.dirname)])
         
         dirname = opts.dirname 
         if dirname[-1] != os.sep:
@@ -412,7 +437,8 @@ def main(argv=None):
             sortedFiles = zip(fileNames, pubDates)
         
         # write dates in RFC-822 format
-        sortedFiles = map(lambda f : (f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(f[1])) ), sortedFiles)
+        sortedFiles = map(lambda f : (f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000",
+                          time.localtime(f[1])) ), sortedFiles)
         
         # build items    
         items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
