@@ -77,14 +77,17 @@ def getFiles(dirname, extensions=None, recursive=False):
     >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3']".format(m)
     >>> str(getFiles("{0}".format(m))) == expected
     True
-    >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}2.MP4', '{0}subdir_1{1}3.mp3', '{0}subdir_1{1}4.mp3', '{0}subdir_2{1}4.mp4', '{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']".format(m, os.sep)
-    >>> str(getFiles("{0}".format(m), recursive=True)) == expected
+    >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}2.MP4', "
+    >>> expected += "'{0}subdir_1{1}3.mp3', '{0}subdir_1{1}4.mp3', '{0}subdir_2{1}4.mp4', "
+    >>> expected += "'{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']"
+    >>> str(getFiles("{0}".format(m), recursive=True)) == expected.format(m, os.sep)
     True
     >>> expected = "['{0}1.mp3', '{0}2.MP3']".format(m)
     >>> str(getFiles("{0}".format(m), extensions=["mp3"])) == expected
     True
-    >>> expected = "['{0}1.mp3', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}3.mp3', '{0}subdir_1{1}4.mp3', '{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']".format(m, os.sep)
-    >>> str(getFiles("{0}".format(m), extensions=["mp3", "ogg"], recursive=True)) == expected
+    >>> expected = "['{0}1.mp3', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}3.mp3', "
+    >>> expected += "'{0}subdir_1{1}4.mp3', '{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']"
+    >>> str(getFiles("{0}".format(m), extensions=["mp3", "ogg"], recursive=True)) == expected.format(m, os.sep)
     True
     >>> expected = "['{0}1.mp4', '{0}subdir_1{1}2.MP4', '{0}subdir_2{1}4.mp4']".format(m, os.sep)
     >>> str(getFiles("{0}".format(m), extensions=["mp4"], recursive=True)) == expected
