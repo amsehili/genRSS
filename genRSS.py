@@ -3,7 +3,7 @@
 '''
 genRSS -- generate a RSS 2 feed from media files in a directory.
 
-Copyright (C) 2014 Amine SEHILI <amine.sehili@gmail.com>
+Copyright (C) 2014-2017 Amine SEHILI <amine.sehili@gmail.com>
 
 genRSS is free software: you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by
@@ -22,7 +22,7 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 @copyright:  2014-2017 Amine Sehili
 @license:    GNU GPL v03
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: Dec 24th 2014
+@deffield    updated: April 8th 2017
 '''
 
 import sys
