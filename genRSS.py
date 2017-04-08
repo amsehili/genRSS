@@ -326,19 +326,19 @@ def fileToItem(host, fname, pubDate):
     return buildItem(link=fileURL, title=os.path.basename(fname),
                      guid=fileURL, description=os.path.basename(fname),
                      pubDate=pubDate, extraTags=[enclosure])
-    
+
     
 def main(argv=None):
     
     program_name = os.path.basename(sys.argv[0])
     program_version = "v0.1"
     program_build_date = "%s" % __updated__
- 
+
     program_version_string = '%%prog %s (%s)' % (program_version, program_build_date)
-    program_usage = "usage: genRSS -d directory [OPTIONS]"
+    program_usage = "genRSS -d directory [OPTIONS]"
     program_longdesc = "genRSS generates an RSS feed from files in a directory"
     program_license = "Copyright 2014-2017 Amine SEHILI. Licensed under the GNU CPL v03"
- 
+
     if argv is None:
         argv = sys.argv[1:]
     try:
@@ -422,6 +422,9 @@ def main(argv=None):
         if opts.extensions is not None:
             opts.extensions = [e for e in  opts.extensions.split(",") if e != ""]
         fileNames = getFiles(dirname.encode("utf-8"), extensions=opts.extensions, recursive=opts.recursive)
+        if len(fileNames) == 0:
+            sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
+            sys.exit(0)
         
         if opts.sort_creation:
             # sort files by date of creation if required
