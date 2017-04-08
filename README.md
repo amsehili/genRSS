@@ -1,5 +1,4 @@
-<b>genRSS</b>
-=========
+# genRSS
 
 ### What is genRSS?
 genRSS takes a directory hosted on your website and generates an RSS 2 feed for all media files within the directory. It can operate recursively and look for media files in sub directories. Media files can also be restricted to a given set of extensions.
@@ -23,29 +22,59 @@ Now place genRSS.py into the same directory and try the following examples.
 
 ### Examples:
 
-**_Generate a podcast from media files in "media"_**
+**_Generate a podcast from `mp3` files in "test/media"_**
 
-    python genRSS.py -d test/media --host localhost:8080 --title "My Podcast" --description "My Podcast Description"  -o feed-1.rss
+The following command generates a feed for `mp3` files within `test/media` directory:
 
-feed-1.rss should now be visible on the web page. You can visit it or open it with a podcast reader.
+    python genRSS.py -d test/media -e mp3 -t "My Podcast" -p "My Podcast Description -o feed.rss"
+ 
+feed.rss should now be visible on the web page. You can visit it or open it with a podcast reader.
 
+If no output file was given (option `-o`), the result would have been printed out on the standard output. It should look like:
+
+```XML
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0">
+   <channel>
+      <title>My Podcast</title>
+      <description>My Podcast Description</description>
+      <link>http://localhost:8080/</link>
+      <item>
+         <guid>http://localhost:8080/test/media/1.mp3</guid>
+         <link>http://localhost:8080/test/media/1.mp3</link>
+         <title>1.mp3</title>
+         <description>1.mp3</description>
+         <pubDate>Sat, 08 Apr 2017 21:19:52 +0000</pubDate>
+         <enclosure url="http://localhost:8080/test/media/1.mp3" type="audio/mpeg" length="0"/>
+      </item>
+      <item>
+         <guid>http://localhost:8080/test/media/2.MP3</guid>
+         <link>http://localhost:8080/test/media/2.MP3</link>
+         <title>2.MP3</title>
+         <description>2.MP3</description>
+         <pubDate>Fri, 07 Apr 2017 21:19:52 +0000</pubDate>
+         <enclosure url="http://localhost:8080/test/media/2.MP3" type="audio/mpeg" length="0"/>
+      </item>
+   </channel>
+</rss>
+```
 
 **_Generate a podcast from media files in "media" and its subdirectories_**
 
-    python genRSS.py --recursive -d test/media --host localhost:8080 --title "My Podcast" --description "My Podcast Description" -o feed-1.rss
+    python genRSS.py -r -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
 
-**_Generate a podcast from MP3 and OGG files in "media" and its subdirectories_**
+**_Generate a podcast from `mp3` and `ogg` files in "media" and its subdirectories_**
 
-    python genRSS.py -e "mp3,ogg" -d test/media --host localhost:8080 --title "My Podcast" --description "My Podcast Description" --recursive -o feed-1.rss
+    python genRSS.py -r -e mp3,ogg -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
 
 
 ### Access your poscast from another machine/device:
 
-localhost:8080 are you host name and your http server port respectively. This pair is automatically used by genRSS.py as prefix for items in the generated podcast. Alternatively, you can use your machine's IP address instead of localhost. This is particularly useful if you want to access your podcast from another machine or a mobile device that share the same network.
+`localhost:8080` are you host name and your http server port respectively. This pair is automatically used by `genRSS` as prefix for items in the generated podcast. Alternatively, you can use your machine's IP address instead of localhost. This is particularly useful if you want to access your podcast from another machine or a mobile device that share the same network.
 
 **Example:**
 
-    python genRSS.py -e "mp3,ogg" -d test/media --host 192.168.1.5:8080 --title "My Podcast" --description "My Podcast Description" --recursive -o feed-1.rss
+    python genRSS.py -e "mp3,ogg" -d test/media -H 192.168.1.5:1234 -t "Podcast Title" -p "Podcast Description" -r -o feed.rss
 
 ### Tests
 
@@ -58,3 +87,6 @@ or in verbose mode:
     python genRSS.py --run-tests -v
 
 Wiki: https://github.com/amsehili/genRSS/wiki
+
+### License
+MIT.
