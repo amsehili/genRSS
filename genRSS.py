@@ -3,24 +3,9 @@
 '''
 genRSS -- generate a RSS 2 feed from media files in a directory.
 
-Copyright (C) 2014-2017 Amine SEHILI <amine.sehili@gmail.com>
-
-genRSS is free software: you can redistribute it and/or modify
-it under the terms of the GNU General Public License as published by
-the Free Software Foundation, either version 3 of the License, or
-(at your option) any later version.
-
-This program is distributed in the hope that it will be useful,
-but WITHOUT ANY WARRANTY; without even the implied warranty of
-MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
-GNU General Public License for more details.
-
-You should have received a copy of the GNU General Public License
-along with this program.  If not, see <http://www.gnu.org/licenses/>.
-
 @author:     Amine SEHILI
 @copyright:  2014-2017 Amine Sehili
-@license:    GNU GPL v03
+@license:    MIT
 @contact:    amine.sehili <AT> gmail.com
 @deffield    updated: April 8th 2017
 '''
@@ -336,8 +321,8 @@ def main(argv=None):
 
     program_version_string = '%%prog %s (%s)' % (program_version, program_build_date)
     program_usage = "genRSS -d directory [OPTIONS]"
-    program_longdesc = "genRSS generates an RSS feed from files in a directory"
-    program_license = "Copyright 2014-2017 Amine SEHILI. Licensed under the GNU CPL v03"
+    program_longdesc = "Generates an RSS feed from files in a directory"
+    program_license = "Copyright 2014-2017 Amine SEHILI. Licensed under the MIT License"
 
     if argv is None:
         argv = sys.argv[1:]
