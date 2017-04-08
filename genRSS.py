@@ -49,28 +49,28 @@ PROFILE = 0
 def getFiles(dirname, extensions=None, recursive=False):
     '''
     Return the list of files (relative paths, starting from dirname) in a given directory.
-    
+
     Unless a list of the desired file extensions is given, all files in dirname are returned.
     If recursive = True, also look for files in sub directories of direname.
-    
+
     Parameters
     ----------
     dirname : string
               path to a directory under the file system.
-           
+
     extensions : list of string
                  Extensions of the accepted files.
-                 Default = None (i.e. return all files). 
-                 
+                 Default = None (i.e. return all files).
+
     recursive : bool
                 If True, recursively look for files in sub directories.
                 Default = False.
-    
+
     Returns
     -------
     selectedFiles : list
                 A list of file paths.
-    
+
     Examples
     --------
     >>> import os
@@ -94,10 +94,10 @@ def getFiles(dirname, extensions=None, recursive=False):
     >>> str(getFiles("{0}".format(m), extensions=["mp4"], recursive=True)) == expected
     True
     '''
-    
+
     if dirname[-1] != os.sep:
         dirname += os.sep
-    
+
     selectedFiles = []
     allFiles = []
     if recursive:
@@ -105,37 +105,37 @@ def getFiles(dirname, extensions=None, recursive=False):
                 for name in filenames:
                     allFiles.append(os.path.join(root, name))
     else:
-        allFiles = [f for f in glob.glob(dirname + "*") if os.path.isfile(f)]   
+        allFiles = [f for f in glob.glob(dirname + "*") if os.path.isfile(f)]
 
     if extensions is not None:
         for ext in set([e.lower() for e in extensions]):
-            selectedFiles += [n for n in allFiles if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))]            
+            selectedFiles += [n for n in allFiles if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))]
     else:
         selectedFiles = allFiles
-    
+
     return sorted(set(selectedFiles))
 
 
 def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
     '''
     Generate a RSS 2 item and return it as a string.
-    
+
     Parameters
     ----------
     link : string
            URL of the item.
-           
+
     title : string
             Title of the item.
-    
+
     guid : string
            Unique identifier of the item. If no guid is given, link is used as the identifier.
            Default = None.
-           
+
    description : string
                  Description of the item.
-                 Default = "" 
-                 
+                 Default = ""
+
     pubDate : string
               Date of publication of the item. Should follow the RFC-822 format,
               otherwise the feed will not pass a validator.
@@ -148,18 +148,18 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
               You can use the following code to gererate a RFC-822 valid time:
               time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
               Default = None (no pubDate tag will be added to the generated item)
-              
+
     indent : string
              A string of white spaces used to indent the elements of the item.
              3 * len(indent) white spaces will be left before <guid>, <link>, <title> and <description>
              and 2 * len(indent) before item.
-    
+
     extraTags : a list of dictionaries
                 Each dictionary contains the following keys
                 - "na1me": name of the tag (mandatory)
                 - "value": value of the tag (optional)
                 - "params": string or list of string, parameters of the tag (optional)
-                
+
                 Example:
                 -------
                 Either of the following two dictionaries:
@@ -172,11 +172,11 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                    {"name" : "aTag", "value" : "aValue", "params" : None}
                 would give this tag:
                    <aTag>aValue</aTag>
-                
+
     Returns
     -------
     A string representing a RSS 2 item.
-    
+
     Examples
     --------
     >>> item = buildItem("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
@@ -190,7 +190,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
              <description>This is item 1</description>
              <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
           </item>
-          
+
     >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
     ...                  extraTags=[{"name" : "itunes:duration" , "value" : "06:08"}])
     >>> print(item)
@@ -201,7 +201,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <description></description>
        <itunes:duration>06:08</itunes:duration>
       </item>
-      
+
     >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
     ...                  extraTags=[{"name" : "enclosure" ,
     ...                              "params" : 'url="http://example.com/media/file.mp3"'
@@ -218,7 +218,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
     >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
     ...                  extraTags= [{"name" : "enclosure", "value" : None,
     ...                               "params" :  ['url="file.mp3"', 'type="audio/mpeg"',
-    ...                                            'length="1234"']}]) 
+    ...                                            'length="1234"']}])
     >>> print(item)
       <item>
        <guid>my/web/site/media/item2</guid>
@@ -228,20 +228,20 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
       </item>
     '''
-    
+
     if guid is None:
         guid = link
-    
+
     guid =  "{0}<guid>{1}</guid>\n".format(indent * 3, guid)
     link = "{0}<link>{1}</link>\n".format(indent * 3, link)
     title = "{0}<title>{1}</title>\n".format(indent * 3, title)
     descrption = "{0}<description>{1}</description>\n".format(indent * 3, description)
-    
+
     if pubDate is not None:
         pubDate = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pubDate)
     else:
         pubDate = ""
-    
+
     extra = ""
     if extraTags is not None:
         for tag in extraTags:
@@ -257,14 +257,14 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                params = " ".join(params)
             if len(params) > 0:
                params = " " + params
-                           
+
             extra += "{0}<{1}{2}".format(indent * 3, name, params)
             extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
-            
+
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title,
                                                             descrption, pubDate, extra)
 
-    
+
 def fileToItem(host, fname, pubDate):
     '''
     Inspect a file name to determine what kind of RSS item to build, and
@@ -327,9 +327,9 @@ def fileToItem(host, fname, pubDate):
                      guid=fileURL, description=os.path.basename(fname),
                      pubDate=pubDate, extraTags=[enclosure])
 
-    
+
 def main(argv=None):
-    
+
     program_name = os.path.basename(sys.argv[0])
     program_version = "v0.1"
     program_build_date = "%s" % __updated__
@@ -353,26 +353,26 @@ def main(argv=None):
                           help="Look for media files recursively in sub directories\n"
                                "[Default:False]",
                           action="store_true", default=False)
-        
+
         parser.add_argument("-e", "--extensions", dest="extensions",
                           help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg)\n[Default: all files]",
                           type=str, default=None, metavar="STRING")
-        
+
         parser.add_argument("-o", "--out", dest="outfile", help="Output RSS file [default: stdout]", metavar=   "FILE")
         parser.add_argument("-H", "--host", dest="host", help="Host name (or IP address), possibly with a protocol\n"
-                                                              "(default: http) a port number and the path to the base\n" 
+                                                              "(default: http) a port number and the path to the base\n"
                                                               "directory where your media directory is located.\n"
                                                               "Examples of host names:\n"
                                                               " - http://localhost:8080 [default]\n"
                                                               " - mywebsite.com/media/JapaneseLessons\n"
                                                               " - mywebsite\n"
-                                                              " - 192.168.1.12:8080\n" 
+                                                              " - 192.168.1.12:8080\n"
                                                               " - http://192.168.1.12/media/JapaneseLessons\n",
                             default="http://localhost:8080",  metavar="URL")
         parser.add_argument("-i", "--image", dest="image",
                           help="Absolute or relative URL for feed's image [default: None]",
                           default = None, metavar="URL")
-        
+
         parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Defaule:None]",
                           default=None, metavar="STRING")
         parser.add_argument("-p", "--description", dest="description", help="Description of the podcast [Defaule:None]",
@@ -384,25 +384,25 @@ def main(argv=None):
                           help="set verbose [default: False]")
         # process options
         opts = parser.parse_args(argv)
-        
+
         if opts.dirname is None or opts.host is None:
             raise Exception("\n".join(["Usage: python %s -d directory -H hostname [-o output -r]" % (program_name),
                                        "For more information run %s --help\n" % (program_name)]))
-        
+
         if not os.path.isdir(opts.dirname) or not os.path.exists(opts.dirname):
             raise Exception("\n".join["Cannot find directory {0}",
                             "--direname must be a path to an existing directory".format(opts.dirname)])
-        
-        dirname = opts.dirname 
+
+        dirname = opts.dirname
         if dirname[-1] != os.sep:
             dirname += os.sep
         host = opts.host
         if host[-1] != '/':
             host += '/'
-        
+
         if not host.lower().startswith("http://") and not host.lower().startswith("https://"):
-            host = "http://" + host 
-        
+            host = "http://" + host
+
         title = ""
         description = ""
         link = host
@@ -411,21 +411,21 @@ def main(argv=None):
                 link += opts.outfile
             else:
                 link += '/' + opts.outfile
-        
+
         if opts.title is not None:
             title = opts.title
-            
+
         if opts.description is not None:
             description = opts.description
-        
-        # get the list of the desired files     
+
+        # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in  opts.extensions.split(",") if e != ""]
         fileNames = getFiles(dirname.encode("utf-8"), extensions=opts.extensions, recursive=opts.recursive)
         if len(fileNames) == 0:
             sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
             sys.exit(0)
-        
+
         if opts.sort_creation:
             # sort files by date of creation if required
             # get files date of creation in seconds
@@ -433,7 +433,7 @@ def main(argv=None):
             # most feed readers will use pubDate to sort items even if they are not sorted in the output file
             # for readability, we also sort fileNames according to pubDates in the feed.
             sortedFiles = sorted(zip(fileNames, pubDates),key=lambda f: - f[1])
-        
+
         else:
             # in order to have feed items sorted by name, we give them artificial pubDates
             # fileNames are already sorted (natural order), so we assume that the first item is published now
@@ -443,50 +443,49 @@ def main(argv=None):
             import random
             pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in xrange(len(fileNames))]
             sortedFiles = zip(fileNames, pubDates)
-        
+
         # write dates in RFC-822 format
         sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(f[1]))) for f in sortedFiles)
-        
-        # build items    
+
+        # build items
         items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
-        
+
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
         else:
             outfp = sys.stdout
-            
+
         outfp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         outfp.write('<rss version="2.0">\n')
         outfp.write('   <channel>\n')
         outfp.write('      <title>{0}</title>\n'.format(title))
         outfp.write('      <description>{0}</description>\n'.format(description))
         outfp.write('      <link>{0}</link>\n'.format(link))
-        
+
         if opts.image is not None:
             if opts.image.lower().startswith("http://") or opts.image.lower().startswith("https://"):
                 imgurl = opts.image
             else:
                 imgurl = urllib.quote(host + opts.image,":/")
-            
+
             outfp.write("      <image>\n")
             outfp.write("         <url>{0}</url>\n".format(imgurl))
             outfp.write("         <title>{0}</title>\n".format(title))
             outfp.write("         <link>{0}</link>\n".format(link))
             outfp.write("      </image>\n")
-            
+
         for item in items:
             outfp.write(item + "\n")
-                
+
         outfp.write('')
         outfp.write('   </channel>\n')
         outfp.write('</rss>\n')
-        
+
         if outfp != sys.stdout:
             outfp.close()
 
     except Exception as e:
         sys.stderr.write(str(e) + "\n")
-        #sys.stderr.write(indent + "  for help use --help\n")
         return 2
 
 
