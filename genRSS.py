@@ -430,7 +430,7 @@ def main(argv=None):
             sortedFiles = zip(fileNames, pubDates)
 
         # write dates in RFC-822 format
-        sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(f[1]))) for f in sortedFiles)
+        sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sortedFiles)
 
         # build items
         items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
