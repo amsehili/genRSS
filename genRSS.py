@@ -382,8 +382,6 @@ def main(argv=None):
         # process options
         opts = parser.parse_args(argv)
 
-        print 'opts.dirname %s' % (','.join(opts.dirname), )
-
         if len(opts.dirname) == 0 or opts.host is None or opts.host == '':
             raise Exception("\n".join(["Usage: python %s -d directory -H hostname [-o output -r]" % (program_name),
                                        "For more information run %s --help\n" % (program_name)]))
