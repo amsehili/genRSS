@@ -26,7 +26,7 @@ Now place genRSS.py into the same directory and try the following examples.
 
 The following command generates a feed for `mp3` files within `test/media` directory:
 
-    python genRSS.py -d test/media -e mp3 -t "My Podcast" -p "My Podcast Description -o feed.rss"
+    python genRSS.py -d test/media -e mp3 -t "My Podcast" -p "My Podcast Description" -o feed.rss
  
 feed.rss should now be visible on the web page. You can visit it or open it with a podcast reader.
 
