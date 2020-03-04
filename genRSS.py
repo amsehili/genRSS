@@ -448,11 +448,18 @@ def main(argv=None):
         outfp = sys.stdout
 
     outfp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-    outfp.write('<rss version="2.0">\n')
+    outfp.write('<rss xmlns:itunes="http://www.itunes.com/DTDs/Podcast-1.0.dtd" version="2.0">\n')
     outfp.write('   <channel>\n')
     outfp.write('      <title>{0}</title>\n'.format(title))
     outfp.write('      <description>{0}</description>\n'.format(description))
     outfp.write('      <link>{0}</link>\n'.format(link))
+    outfp.write('      <language>en-US</language>\n')
+    outfp.write("      <itunes:author>Charles Martin</itunes:author>\n")
+    outfp.write("      <itunes:subtitle>Lectures and discussions from COMP2300 on computer organisation and program execution.</itunes:subtitle>\n")
+    outfp.write("      <itunes:explicit>no</itunes:explicit>\n")
+    outfp.write("      <itunes:owner><itunes:name>charles.martin@anu.edu.au</itunes:name><itunes:email>charles.martin@anu.edu.au</itunes:email></itunes:owner>\n")
+    outfp.write('      <itunes:category text="Technology"/>\n')
+    outfp.write("      <copyright>Charles Martin</copyright>\n")
 
     if opts.image is not None:
         if opts.image.lower().startswith("http://") or opts.image.lower().startswith("https://"):
@@ -465,7 +472,7 @@ def main(argv=None):
         outfp.write("         <title>{0}</title>\n".format(title))
         outfp.write("         <link>{0}</link>\n".format(link))
         outfp.write("      </image>\n")
-
+        outfp.write('      <itunes:image href="{0}"/>\n'.format(imgurl))
     for item in items:
         outfp.write(item + "\n")
 
