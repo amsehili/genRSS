@@ -19,6 +19,7 @@ import urllib
 import urllib.parse
 import mimetypes
 import argparse
+from mutagen.easyid3 import EasyID3
 
 from optparse import OptionParser
 
@@ -309,8 +310,13 @@ def fileToItem(host, fname, pubDate):
     else:
         enclosure = None
 
-    return buildItem(link=fileURL, title=os.path.basename(fname),
-                     guid=fileURL, description=os.path.basename(fname),
+    # Extract ID3 data for title
+    audio = EasyID3(fname)
+    fileTitle = audio["title"][0].replace('-', ' ')
+    fileDescription = audio["album"][0]
+
+    return buildItem(link=fileURL, title=fileTitle,
+                     guid=fileURL, description=fileDescription,
                      pubDate=pubDate, extraTags=[enclosure])
 
 
