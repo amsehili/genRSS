@@ -441,8 +441,9 @@ def main(argv=None):
             outfp = sys.stdout
 
         outfp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        outfp.write('<rss version="2.0">\n')
+        outfp.write('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n')
         outfp.write('   <channel>\n')
+        outfp.write('      <atom:link href="{0}" rel="self" type="application/rss+xml" />\n'.format(link))
         outfp.write('      <title>{0}</title>\n'.format(title))
         outfp.write('      <description>{0}</description>\n'.format(description))
         outfp.write('      <link>{0}</link>\n'.format(link))
