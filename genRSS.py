@@ -1,4 +1,4 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 '''
 genRSS -- generate a RSS 2 feed from media files in a directory.
@@ -7,7 +7,7 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 @copyright:  2014-2017 Amine Sehili
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: April 8th 2017
+@deffield    updated: April 19th 2020
 '''
 
 import sys
@@ -26,7 +26,7 @@ from optparse import OptionParser
 __all__ = []
 __version__ = 0.1
 __date__ = '2014-11-01'
-__updated__ = '2017-04-08'
+__updated__ = '2020-04-19'
 
 DEBUG = 0
 TESTRUN = 0
@@ -433,7 +433,7 @@ def main(argv=None):
         # f is a random number of seconds between 0 and 10 (float)
         now = time.time()
         import random
-        pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in xrange(len(fileNames))]
+        pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(fileNames))]
         sortedFiles = zip(fileNames, pubDates)
 
     # write dates in RFC-822 format
