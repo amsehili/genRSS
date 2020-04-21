@@ -1,13 +1,13 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 # encoding: utf-8
 '''
 genRSS -- generate a RSS 2 feed from media files in a directory.
 
 @author:     Amine SEHILI
-@copyright:  2014-2017 Amine Sehili
+@copyright:  2014-2020 Amine Sehili
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: April 8th 2017
+@deffield    updated: April 21st 2020
 '''
 
 import sys
@@ -16,15 +16,17 @@ import glob
 import fnmatch
 import time
 import urllib
+import urllib.parse
 import mimetypes
 import argparse
+
 
 from optparse import OptionParser
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2014-11-01'
-__updated__ = '2017-04-08'
+__updated__ = '2020-04-21'
 
 DEBUG = 0
 TESTRUN = 0
@@ -272,7 +274,7 @@ def fileToItem(host, fname, pubDate):
 
     Examples
     --------
-    >>> print fileToItem('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000')
+    >>> print(fileToItem('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/media/1.mp3</guid>
              <link>example.com/test/media/1.mp3</link>
@@ -281,7 +283,7 @@ def fileToItem(host, fname, pubDate):
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
              <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
           </item>
-    >>> print fileToItem('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000')
+    >>> print(fileToItem('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/invalid/checksum.md5</guid>
              <link>example.com/test/invalid/checksum.md5</link>
@@ -289,7 +291,7 @@ def fileToItem(host, fname, pubDate):
              <description>checksum.md5</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
           </item>
-    >>> print fileToItem('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000')
+    >>> print(fileToItem('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/invalid/windows.exe</guid>
              <link>example.com/test/invalid/windows.exe</link>
@@ -299,7 +301,7 @@ def fileToItem(host, fname, pubDate):
           </item>
     '''
 
-    fileURL = urllib.quote(host + fname.replace("\\", "/"), ":/")
+    fileURL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
     fileMimeType = mimetypes.guess_type(fname)[0]
 
     if fileMimeType is not None and ("audio" in fileMimeType or "video" in fileMimeType):
@@ -327,52 +329,53 @@ def main(argv=None):
     if argv is None:
         argv = sys.argv[1:]
     try:
+
         parser = argparse.ArgumentParser(usage=program_usage, description=program_longdesc,
-                                         formatter_class=argparse.RawTextHelpFormatter)
+                                            formatter_class=argparse.RawTextHelpFormatter)
         parser.add_argument("-d", "--dirname", dest="dirname",
-                           help="Directory to look for media files in.\n"
+                            help="Directory to look for media files in.\n"
                                 "This directory name will be appended to the host name\n"
                                 "to create absolute paths to your media files.",
-                           metavar="DIRECTORY")
+                            metavar="DIRECTORY")
         parser.add_argument("-r", "--recursive", dest="recursive",
-                          help="Look for media files recursively in sub directories\n"
-                               "[Default:False]",
-                          action="store_true", default=False)
+                            help="Look for media files recursively in sub directories\n"
+                                "[Default:False]",
+                            action="store_true", default=False)
 
         parser.add_argument("-e", "--extensions", dest="extensions",
-                          help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg)\n[Default: all files]",
-                          type=str, default=None, metavar="STRING")
+                            help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg)\n[Default: all files]",
+                            type=str, default=None, metavar="STRING")
 
         parser.add_argument("-o", "--out", dest="outfile", help="Output RSS file [default: stdout]", metavar=   "FILE")
         parser.add_argument("-H", "--host", dest="host", help="Host name (or IP address), possibly with a protocol\n"
-                                                              "(default: http) a port number and the path to the base\n"
-                                                              "directory where your media directory is located.\n"
-                                                              "Examples of host names:\n"
-                                                              " - http://localhost:8080 [default]\n"
-                                                              " - mywebsite.com/media/JapaneseLessons\n"
-                                                              " - mywebsite\n"
-                                                              " - 192.168.1.12:8080\n"
-                                                              " - http://192.168.1.12/media/JapaneseLessons\n",
+                                                                "(default: http) a port number and the path to the base\n"
+                                                                "directory where your media directory is located.\n"
+                                                                "Examples of host names:\n"
+                                                                " - http://localhost:8080 [default]\n"
+                                                                " - mywebsite.com/media/JapaneseLessons\n"
+                                                                " - mywebsite\n"
+                                                                " - 192.168.1.12:8080\n"
+                                                                " - http://192.168.1.12/media/JapaneseLessons\n",
                             default="http://localhost:8080",  metavar="URL")
         parser.add_argument("-i", "--image", dest="image",
-                          help="Absolute or relative URL for feed's image [default: None]",
-                          default = None, metavar="URL")
+                            help="Absolute or relative URL for feed's image [default: None]",
+                            default = None, metavar="URL")
 
         parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Defaule:None]",
-                          default=None, metavar="STRING")
+                            default=None, metavar="STRING")
         parser.add_argument("-p", "--description", dest="description", help="Description of the podcast [Defaule:None]",
-                          default=None, metavar="STRING")
+                            default=None, metavar="STRING")
         parser.add_argument("-C", "--sort-creation", dest="sort_creation",
-                          help="Sort files by date of creation instead of name (default)",
-                          action="store_true", default=False)
+                            help="Sort files by date of creation instead of name (default)",
+                            action="store_true", default=False)
         parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
-                          help="set verbose [default: False]")
+                            help="set verbose [default: False]")
         # process options
         opts = parser.parse_args(argv)
 
         if opts.dirname is None or opts.host is None:
             raise Exception("\n".join(["Usage: python %s -d directory -H hostname [-o output -r]" % (program_name),
-                                       "For more information run %s --help\n" % (program_name)]))
+                                        "For more information run %s --help\n" % (program_name)]))
 
         if not os.path.isdir(opts.dirname) or not os.path.exists(opts.dirname):
             raise Exception("\n".join["Cannot find directory {0}",
@@ -406,7 +409,7 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in  opts.extensions.split(",") if e != ""]
-        fileNames = getFiles(dirname.encode("utf-8"), extensions=opts.extensions, recursive=opts.recursive)
+        fileNames = getFiles(dirname, extensions=opts.extensions, recursive=opts.recursive)
         if len(fileNames) == 0:
             sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
             sys.exit(0)
@@ -426,7 +429,7 @@ def main(argv=None):
             # f is a random number of seconds between 0 and 10 (float)
             now = time.time()
             import random
-            pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in xrange(len(fileNames))]
+            pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(fileNames))]
             sortedFiles = zip(fileNames, pubDates)
 
         # write dates in RFC-822 format
@@ -452,7 +455,7 @@ def main(argv=None):
             if opts.image.lower().startswith("http://") or opts.image.lower().startswith("https://"):
                 imgurl = opts.image
             else:
-                imgurl = urllib.quote(host + opts.image,":/")
+                imgurl = urllib.parse.quote(host + opts.image,":/")
 
             outfp.write("      <image>\n")
             outfp.write("         <url>{0}</url>\n".format(imgurl))
