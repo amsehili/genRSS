@@ -19,6 +19,7 @@ import urllib
 import urllib.parse
 import mimetypes
 import argparse
+import xml.sax.saxutils
 
 
 from optparse import OptionParser
@@ -221,8 +222,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     guid =  "{0}<guid>{1}</guid>\n".format(indent * 3, guid)
     link = "{0}<link>{1}</link>\n".format(indent * 3, link)
-    title = "{0}<title>{1}</title>\n".format(indent * 3, title)
-    descrption = "{0}<description>{1}</description>\n".format(indent * 3, description)
+    title = "{0}<title>{1}</title>\n".format(indent * 3, xml.sax.saxutils.escape(title))
+    descrption = "{0}<description>{1}</description>\n".format(indent * 3, xml.sax.saxutils.escape(description))
 
     if pubDate is not None:
         pubDate = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pubDate)
@@ -447,7 +448,7 @@ def main(argv=None):
         outfp.write('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n')
         outfp.write('   <channel>\n')
         outfp.write('      <atom:link href="{0}" rel="self" type="application/rss+xml" />\n'.format(link))
-        outfp.write('      <title>{0}</title>\n'.format(title))
+        outfp.write('      <title>{0}</title>\n'.format(xml.sax.saxutils.escape(title)))
         outfp.write('      <description>{0}</description>\n'.format(description))
         outfp.write('      <link>{0}</link>\n'.format(link))
 
@@ -459,7 +460,7 @@ def main(argv=None):
 
             outfp.write("      <image>\n")
             outfp.write("         <url>{0}</url>\n".format(imgurl))
-            outfp.write("         <title>{0}</title>\n".format(title))
+            outfp.write("         <title>{0}</title>\n".format(xml.sax.saxutils.escape(title)))
             outfp.write("         <link>{0}</link>\n".format(link))
             outfp.write("      </image>\n")
 
