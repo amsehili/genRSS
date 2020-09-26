@@ -10,6 +10,7 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 @deffield    updated: April 21st 2020
 '''
 
+import datetime
 import sys
 import os
 import glob
@@ -252,7 +253,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                                                             descrption, pubDate, extra)
 
 
-def fileToItem(host, fname, pubDate):
+def fileToItem(host, fname, title, pubDate):
     '''
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
@@ -310,8 +311,8 @@ def fileToItem(host, fname, pubDate):
     else:
         enclosure = None
 
-    return buildItem(link=fileURL, title=os.path.basename(fname),
-                     guid=fileURL, description=os.path.basename(fname),
+    return buildItem(link=fileURL, title=title,
+                     guid=fileURL, description=title,
                      pubDate=pubDate, extraTags=[enclosure])
 
 
@@ -370,6 +371,8 @@ def main(argv=None):
                             action="store_true", default=False)
         parser.add_argument("-v", "--verbose", dest="verbose", action="store_true",
                             help="set verbose [default: False]")
+        parser.add_argument("-I", "--id3", dest="id3", action="store_true",
+                            help="populate metadata from ID3 tags [default: False]")
         # process options
         opts = parser.parse_args(argv)
 
@@ -414,13 +417,29 @@ def main(argv=None):
             sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
             sys.exit(0)
 
-        if opts.sort_creation:
+        if opts.id3:
+            from mutagen.easyid3 import EasyID3
+            sortedFiles = []
+            for fileName in fileNames:
+                id3 = EasyID3(fileName)
+                try:
+                    id3title = id3["title"][0]
+                except KeyError:
+                    id3title = fileName
+                try:
+                    year = int(id3["date"][0])
+                    date = datetime.datetime(year, 1, 1).timestamp()
+                except KeyError:
+                    date = os.path.getctime(fileName)
+                sortedFiles.append((fileName, id3title, date))
+            sortedFiles.sort(key=lambda f: -f[2])
+        elif opts.sort_creation:
             # sort files by date of creation if required
             # get files date of creation in seconds
             pubDates = [os.path.getctime(f) for f in fileNames]
             # most feed readers will use pubDate to sort items even if they are not sorted in the output file
             # for readability, we also sort fileNames according to pubDates in the feed.
-            sortedFiles = sorted(zip(fileNames, pubDates),key=lambda f: - f[1])
+            sortedFiles = sorted(zip(fileNames, (os.path.basename(x) for x in fileNames), pubDates), key=lambda f: -f[2])
 
         else:
             # in order to have feed items sorted by name, we give them artificial pubDates
@@ -430,13 +449,13 @@ def main(argv=None):
             now = time.time()
             import random
             pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(fileNames))]
-            sortedFiles = zip(fileNames, pubDates)
+            sortedFiles = zip(fileNames, (os.path.basename(x) for x in fileNames), pubDates)
 
         # write dates in RFC-822 format
-        sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sortedFiles)
+        sortedFiles = ((f[0], f[1], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[2]))) for f in sortedFiles)
 
         # build items
-        items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
+        items = [fileToItem(host, fname, title, pubDate) for fname, title, pubDate in sortedFiles]
 
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
