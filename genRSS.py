@@ -379,8 +379,8 @@ def main(argv=None):
                                         "For more information run %s --help\n" % (program_name)]))
 
         if not os.path.isdir(opts.dirname) or not os.path.exists(opts.dirname):
-            raise Exception("\n".join["Cannot find directory {0}",
-                            "--dirname must be a path to an existing directory".format(opts.dirname)])
+            raise Exception("\n".join(["Cannot find directory {0}",
+                            "--dirname must be a path to an existing directory"]).format(opts.dirname))
 
         dirname = opts.dirname
         if dirname[-1] != os.sep:
