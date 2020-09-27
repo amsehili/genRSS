@@ -38,7 +38,7 @@ def getFiles(dirname, extensions=None, recursive=False):
     Return the list of files (relative paths, starting from dirname) in a given directory.
 
     Unless a list of the desired file extensions is given, all files in dirname are returned.
-    If recursive = True, also look for files in sub directories of direname.
+    If recursive = True, also look for files in sub directories of dirname.
 
     Parameters
     ----------
@@ -361,9 +361,9 @@ def main(argv=None):
                             help="Absolute or relative URL for feed's image [default: None]",
                             default = None, metavar="URL")
 
-        parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Defaule:None]",
+        parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Default:None]",
                             default=None, metavar="STRING")
-        parser.add_argument("-p", "--description", dest="description", help="Description of the podcast [Defaule:None]",
+        parser.add_argument("-p", "--description", dest="description", help="Description of the podcast [Default:None]",
                             default=None, metavar="STRING")
         parser.add_argument("-C", "--sort-creation", dest="sort_creation",
                             help="Sort files by date of creation instead of name (default)",
@@ -379,7 +379,7 @@ def main(argv=None):
 
         if not os.path.isdir(opts.dirname) or not os.path.exists(opts.dirname):
             raise Exception("\n".join["Cannot find directory {0}",
-                            "--direname must be a path to an existing directory".format(opts.dirname)])
+                            "--dirname must be a path to an existing directory".format(opts.dirname)])
 
         dirname = opts.dirname
         if dirname[-1] != os.sep:
