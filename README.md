@@ -10,13 +10,13 @@ The following command launches an HTTP server that serves the current directory
 
     python -m SimpleHTTPServer
 
-The server will be listening on port 8000 (default). You can also spicify the port as an argument:
+The server will be listening on port 8000 (default). You can also specify the port as an argument:
 
     python -m SimpleHTTPServer 8080
 
 Go to a web browser and type: http://localhost:8080/ . You should get a web page listing of all elements in current directory .
 
-Place the test media directory (contains fake media files) in the directory served by SimpleHTTPServerer and refresh the web page. You should now see and be able to browse the media folder.
+Place the test media directory (contains fake media files) in the directory served by SimpleHTTPServer and refresh the web page. You should now see and be able to browse the media folder.
 
 Now place genRSS.py into the same directory and try the following examples.
 
@@ -68,7 +68,7 @@ If no output file was given (option `-o`), the result would have been printed ou
     python genRSS.py -r -e mp3,ogg -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
 
 
-### Access your poscast from another machine/device:
+### Access your podcast from another machine/device:
 
 `localhost:8080` are you host name and your http server port respectively. This pair is automatically used by `genRSS` as prefix for items in the generated podcast. Alternatively, you can use your machine's IP address instead of localhost. This is particularly useful if you want to access your podcast from another machine or a mobile device that share the same network.
 
