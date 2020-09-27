@@ -12,6 +12,7 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 
 import sys
 import os
+import getpass
 import glob
 import fnmatch
 import time
@@ -391,7 +392,7 @@ def main(argv=None):
         if not host.lower().startswith("http://") and not host.lower().startswith("https://"):
             host = "http://" + host
 
-        title = ""
+        title = getpass.getuser() + "'s feed"
         description = ""
         link = host
         if opts.outfile is not None:
