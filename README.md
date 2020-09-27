@@ -8,15 +8,15 @@ Suppose you have a web server and a website hosted on that server. genRSS can be
 
 The following command launches an HTTP server that serves the current directory
 
-    python -m SimpleHTTPServer
+    python3 -m http.server
 
 The server will be listening on port 8000 (default). You can also specify the port as an argument:
 
-    python -m SimpleHTTPServer 8080
+    python3 -m http.server 8080
 
-Go to a web browser and type: http://localhost:8080/ . You should get a web page listing of all elements in current directory .
+Go to a web browser and type: http://localhost:8080/. You should get a web page listing of all elements in current directory.
 
-Place the test media directory (contains fake media files) in the directory served by SimpleHTTPServer and refresh the web page. You should now see and be able to browse the media folder.
+Place the test media directory (contains fake media files) in the directory served by Python HTTP Server and refresh the web page. You should now see and be able to browse the media folder.
 
 Now place genRSS.py into the same directory and try the following examples.
 
@@ -26,7 +26,7 @@ Now place genRSS.py into the same directory and try the following examples.
 
 The following command generates a feed for `mp3` files within `test/media` directory:
 
-    python genRSS.py -d test/media -e mp3 -t "My Podcast" -p "My Podcast Description" -o feed.rss
+    python3 genRSS.py -d test/media -e mp3 -t "My Podcast" -p "My Podcast Description" -o feed.rss
  
 feed.rss should now be visible on the web page. You can visit it or open it with a podcast reader.
 
@@ -61,11 +61,11 @@ If no output file was given (option `-o`), the result would have been printed ou
 
 **_Generate a podcast from media files in "media" and its subdirectories_**
 
-    python genRSS.py -r -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
+    python3 genRSS.py -r -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
 
 **_Generate a podcast from `mp3` and `ogg` files in "media" and its subdirectories_**
 
-    python genRSS.py -r -e mp3,ogg -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
+    python3 genRSS.py -r -e mp3,ogg -d test/media -t "Podcast Title" -p "Podcast Description" -o feed.rss
 
 
 ### Access your podcast from another machine/device:
@@ -74,19 +74,19 @@ If no output file was given (option `-o`), the result would have been printed ou
 
 **Example:**
 
-    python genRSS.py -e "mp3,ogg" -d test/media -H 192.168.1.5:1234 -t "Podcast Title" -p "Podcast Description" -r -o feed.rss
+    python3 genRSS.py -e "mp3,ogg" -d test/media -H 192.168.1.5:1234 -t "Podcast Title" -p "Podcast Description" -r -o feed.rss
 
 ### Tests
 
 To run tests type:
 
-    python genRSS.py --run-tests
+    python3 genRSS.py --run-tests
 
 or in verbose mode:
 
-    python genRSS.py --run-tests -v
+    python3 genRSS.py --run-tests -v
 
 Wiki: https://github.com/amsehili/genRSS/wiki
 
 ### License
-MIT.
+MIT: https://github.com/amsehili/genRSS/blob/master/LICENSE
