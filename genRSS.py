@@ -4,10 +4,10 @@
 genRSS -- generate a RSS 2 feed from media files in a directory.
 
 @author:     Amine SEHILI
-@copyright:  2014-2020 Amine Sehili
+@copyright:  2014-2020 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: April 21st 2020
+@deffield    updated: October 17th 2020
 '''
 
 import sys
@@ -19,15 +19,13 @@ import urllib
 import urllib.parse
 import mimetypes
 import argparse
-import xml.sax.saxutils
-
-
+from xml.sax import saxutils
 from optparse import OptionParser
 
 __all__ = []
 __version__ = 0.1
 __date__ = '2014-11-01'
-__updated__ = '2020-04-21'
+__updated__ = '2020-10-17'
 
 DEBUG = 0
 TESTRUN = 0
@@ -222,8 +220,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     guid =  "{0}<guid>{1}</guid>\n".format(indent * 3, guid)
     link = "{0}<link>{1}</link>\n".format(indent * 3, link)
-    title = "{0}<title>{1}</title>\n".format(indent * 3, xml.sax.saxutils.escape(title))
-    descrption = "{0}<description>{1}</description>\n".format(indent * 3, xml.sax.saxutils.escape(description))
+    title = "{0}<title>{1}</title>\n".format(indent * 3, saxutils.escape(title))
+    descrption = "{0}<description>{1}</description>\n".format(indent * 3, saxutils.escape(description))
 
     if pubDate is not None:
         pubDate = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pubDate)
@@ -362,7 +360,7 @@ def main(argv=None):
                             help="Absolute or relative URL for feed's image [default: None]",
                             default = None, metavar="URL")
 
-        parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Default:None]",
+        parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Default: use directory name as title]",
                             default=None, metavar="STRING")
         parser.add_argument("-p", "--description", dest="description", help="Description of the podcast [Default:None]",
                             default=None, metavar="STRING")
@@ -401,7 +399,9 @@ def main(argv=None):
             else:
                 link += '/' + opts.outfile
 
-        if opts.title is not None:
+        if opts.title is None:
+            title = os.path.split(dirname[:-1])[-1]
+        else:
             title = opts.title
 
         if opts.description is not None:
@@ -448,7 +448,7 @@ def main(argv=None):
         outfp.write('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n')
         outfp.write('   <channel>\n')
         outfp.write('      <atom:link href="{0}" rel="self" type="application/rss+xml" />\n'.format(link))
-        outfp.write('      <title>{0}</title>\n'.format(xml.sax.saxutils.escape(title)))
+        outfp.write('      <title>{0}</title>\n'.format(saxutils.escape(title)))
         outfp.write('      <description>{0}</description>\n'.format(description))
         outfp.write('      <link>{0}</link>\n'.format(link))
 
@@ -460,7 +460,7 @@ def main(argv=None):
 
             outfp.write("      <image>\n")
             outfp.write("         <url>{0}</url>\n".format(imgurl))
-            outfp.write("         <title>{0}</title>\n".format(xml.sax.saxutils.escape(title)))
+            outfp.write("         <title>{0}</title>\n".format(saxutils.escape(title)))
             outfp.write("         <link>{0}</link>\n".format(link))
             outfp.write("      </image>\n")
 
