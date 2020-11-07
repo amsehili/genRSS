@@ -7,7 +7,7 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 @copyright:  2014-2020 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: October 17th 2020
+@deffield    updated: November 03rd 2020
 '''
 
 import sys
@@ -23,9 +23,9 @@ from xml.sax import saxutils
 from optparse import OptionParser
 
 __all__ = []
-__version__ = 0.1
+__version__ = 0.2
 __date__ = '2014-11-01'
-__updated__ = '2020-10-17'
+__updated__ = '2020-11-07'
 
 DEBUG = 0
 TESTRUN = 0
@@ -60,24 +60,34 @@ def getFiles(dirname, extensions=None, recursive=False):
     Examples
     --------
     >>> import os
-    >>> m = "test{0}media{0}".format(os.sep)
-    >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3']".format(m)
-    >>> str(getFiles("{0}".format(m))) == expected
+    >>> media_dir = os.path.join("test", "media")
+    >>> files =  ['1.mp3', '1.mp4', '1.ogg', '2.MP3', 'flac_with_tags.flac', 'mp3_with_tags.mp3']
+    >>> expected = [os.path.join(media_dir, f) for f in files]
+    >>> getFiles(media_dir) == expected
     True
-    >>> expected = "['{0}1.mp3', '{0}1.mp4', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}2.MP4', "
-    >>> expected += "'{0}subdir_1{1}3.mp3', '{0}subdir_1{1}4.mp3', '{0}subdir_2{1}4.mp4', "
-    >>> expected += "'{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']"
-    >>> str(getFiles("{0}".format(m), recursive=True)) == expected.format(m, os.sep)
+
+    >>> expected = [os.path.join(media_dir, f) for f in files]
+    >>> sd_1 = os.path.join(media_dir, "subdir_1")
+    >>> expected += [os.path.join(sd_1, f) for f in ['2.MP4', '3.mp3', '4.mp3']]
+    >>> sd_2 = os.path.join(media_dir, "subdir_2")
+    >>> expected += [os.path.join(sd_2, f) for f in ['4.mp4', '5.mp3', '6.mp3']]
+    >>> getFiles(media_dir, recursive=True) == expected
     True
-    >>> expected = "['{0}1.mp3', '{0}2.MP3']".format(m)
-    >>> str(getFiles("{0}".format(m), extensions=["mp3"])) == expected
+
+    >>> files = ['1.mp3', '2.MP3', 'mp3_with_tags.mp3']
+    >>> expected = [os.path.join(media_dir, f) for f in files]
+    >>> getFiles(media_dir, extensions=["mp3"]) == expected
     True
-    >>> expected = "['{0}1.mp3', '{0}1.ogg', '{0}2.MP3', '{0}subdir_1{1}3.mp3', "
-    >>> expected += "'{0}subdir_1{1}4.mp3', '{0}subdir_2{1}5.mp3', '{0}subdir_2{1}6.mp3']"
-    >>> str(getFiles("{0}".format(m), extensions=["mp3", "ogg"], recursive=True)) == expected.format(m, os.sep)
+
+    >>> files = ['1.mp3', '1.ogg', '2.MP3', 'mp3_with_tags.mp3']
+    >>> expected = [os.path.join(media_dir, f) for f in files]
+    >>> expected += [os.path.join(sd_1, f) for f in ['3.mp3', '4.mp3']]
+    >>> expected += [os.path.join(sd_2, f) for f in ['5.mp3', '6.mp3']]
+    >>> getFiles(media_dir, extensions=["mp3", "ogg"], recursive=True) == expected
     True
-    >>> expected = "['{0}1.mp4', '{0}subdir_1{1}2.MP4', '{0}subdir_2{1}4.mp4']".format(m, os.sep)
-    >>> str(getFiles("{0}".format(m), extensions=["mp4"], recursive=True)) == expected
+
+    >>> expected = [os.path.join(media_dir, '1.mp4'), os.path.join(sd_1, '2.MP4'), os.path.join(sd_2, '4.mp4')]
+    >>> getFiles(media_dir, extensions=["mp4"], recursive=True) == expected
     True
     '''
 
@@ -251,7 +261,84 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                                                             descrption, pubDate, extra)
 
 
-def fileToItem(host, fname, pubDate):
+def getTitle(filename, use_metadata=False):
+    '''
+    Get item title from file. If use_metadata is True, try reading title from
+    metadata otherwise return file name as the title (without extension).
+
+    Parameters
+    ----------
+    filename : string
+        Path to a file.
+
+    use_metadata : bool
+        Whether to use metadata. Default: False.
+
+    Returns
+    -------
+    title : string
+        Item title.
+
+    Examples
+    --------
+    >>> media_dir = os.path.join("test", "media")
+    >>> flac_file = os.path.join(media_dir, 'flac_with_tags.flac')
+    >>> mp3_file = os.path.join(media_dir, 'mp3_with_tags.mp3')
+
+    >>> getTitle(flac_file)
+    'flac_with_tags'
+
+    >>> getTitle(flac_file, True)
+    'Test FLAC file with tags'
+
+    >>> getTitle(mp3_file, True)
+    'Test media file with ID3 tags'
+    '''
+    if use_metadata:
+        try:
+            # file with ID3 tags
+            import eyed3
+            meta = eyed3.load(filename)
+            if meta and meta.tag is not None:
+                return meta.tag.title
+        except ImportError:
+            pass
+
+        try:
+            import mutagen
+            from mutagen import id3, mp4, easyid3, easymp4
+            from mutagen.mp3 import HeaderNotFoundError
+            try:
+                # file with ID3 tags
+                title = easyid3.EasyID3(filename)["title"]
+                if title:
+                    return title[0]
+            except (id3.ID3NoHeaderError, KeyError):
+                try:
+                    # file with MP4 tags
+                    title = easymp4.EasyMP4(filename)["title"]
+                    if title:
+                        return title[0]
+                except (mp4.MP4StreamInfoError, KeyError):
+                    try:
+                        # other media types
+                        meta = mutagen.File(filename)
+                        if meta is not None:
+                            title = meta["title"]
+                            if title:
+                                return title[0]
+                    except (KeyError, HeaderNotFoundError):
+                        pass
+        except ImportError:
+            pass
+
+    # fallback to filename as a title, remove extension though
+    filename = os.path.basename(filename)
+    title, _ = os.path.splitext(filename)
+    return title
+
+
+def fileToItem(host, fname, pubDate, use_metadata=False):
     '''
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
@@ -277,8 +364,8 @@ def fileToItem(host, fname, pubDate):
           <item>
              <guid>example.com/test/media/1.mp3</guid>
              <link>example.com/test/media/1.mp3</link>
-             <title>1.mp3</title>
-             <description>1.mp3</description>
+             <title>1</title>
+             <description>1</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
              <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
           </item>
@@ -286,17 +373,35 @@ def fileToItem(host, fname, pubDate):
           <item>
              <guid>example.com/test/invalid/checksum.md5</guid>
              <link>example.com/test/invalid/checksum.md5</link>
-             <title>checksum.md5</title>
-             <description>checksum.md5</description>
+             <title>checksum</title>
+             <description>checksum</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
           </item>
     >>> print(fileToItem('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/invalid/windows.exe</guid>
              <link>example.com/test/invalid/windows.exe</link>
-             <title>windows.exe</title>
-             <description>windows.exe</description>
+             <title>windows</title>
+             <description>windows</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+          </item>
+    >>> print(fileToItem('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+          <item>
+             <guid>example.com/test/media/mp3_with_tags.mp3</guid>
+             <link>example.com/test/media/mp3_with_tags.mp3</link>
+             <title>mp3_with_tags</title>
+             <description>mp3_with_tags</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+             <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
+          </item>
+    >>> print(fileToItem('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
+          <item>
+             <guid>example.com/test/media/mp3_with_tags.mp3</guid>
+             <link>example.com/test/media/mp3_with_tags.mp3</link>
+             <title>Test media file with ID3 tags</title>
+             <description>Test media file with ID3 tags</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+             <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
           </item>
     '''
 
@@ -309,8 +414,10 @@ def fileToItem(host, fname, pubDate):
     else:
         enclosure = None
 
-    return buildItem(link=fileURL, title=os.path.basename(fname),
-                     guid=fileURL, description=os.path.basename(fname),
+    title = getTitle(fname, use_metadata)
+
+    return buildItem(link=fileURL, title=title,
+                     guid=fileURL, description=title,
                      pubDate=pubDate, extraTags=[enclosure])
 
 
@@ -359,6 +466,10 @@ def main(argv=None):
         parser.add_argument("-i", "--image", dest="image",
                             help="Absolute or relative URL for feed's image [default: None]",
                             default = None, metavar="URL")
+
+        parser.add_argument("-M", "--metadata", dest="use_metadata",
+                            help="Use media files' metadata to extract item title [default: False]",
+                            action="store_true", default=False)
 
         parser.add_argument("-t", "--title", dest="title", help="Title of the podcast [Default: use directory name as title]",
                             default=None, metavar="STRING")
@@ -437,7 +548,7 @@ def main(argv=None):
         sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sortedFiles)
 
         # build items
-        items = [fileToItem(host, fname, pubDate) for fname, pubDate in sortedFiles]
+        items = [fileToItem(host, fname, pubDate, opts.use_metadata) for fname, pubDate in sortedFiles]
 
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
