@@ -529,7 +529,7 @@ def main(argv=None):
         if opts.sort_creation:
             # sort files by date of creation if required
             # get files date of creation in seconds
-            pubDates = [os.path.getctime(f) for f in fileNames]
+            pubDates = [os.path.getmtime(f) for f in fileNames]
             # most feed readers will use pubDate to sort items even if they are not sorted in the output file
             # for readability, we also sort fileNames according to pubDates in the feed.
             sortedFiles = sorted(zip(fileNames, pubDates),key=lambda f: - f[1])
