@@ -12,8 +12,10 @@ genRSS -- generate a RSS 2 feed from media files in a directory.
 
 import sys
 import os
+import subprocess
 import glob
 import fnmatch
+import json
 import time
 import urllib
 import urllib.parse
@@ -338,6 +340,50 @@ def getTitle(filename, use_metadata=False):
     return title
 
 
+def getDuration(filename):
+    '''
+    Get the item duration from file, using the ffprobe tool.
+
+    According to both Google and Apple, many formats are supported by the
+    <itunes:duration> tag: h:mm:ss, mm:ss, or just seconds as an integer.
+
+    https://support.google.com/podcast-publishers/answer/9889544?hl=en#recommended_episode
+    https://help.apple.com/itc/podcasts_connect/#/itcb54353390
+
+    Parameters
+    ----------
+    filename : string
+        Path to a file.
+
+    Returns
+    -------
+    duration : int
+        The duration as the number of seconds. Or None.
+
+    Examples
+    --------
+    >>> media_dir = os.path.join("test", "media")
+    >>> empty_file = os.path.join(media_dir, 'flac_with_tags.flac')
+    >>> # TODO: create a file with certain duration.
+
+    >>> getDuration(empty_file) is None
+    True
+    '''
+    args = ['ffprobe', '-show_entries', 'format=duration', '-of', 'json', filename]
+    try:
+        p = subprocess.run(args, capture_output=True, check=True)
+    except (FileNotFoundError, subprocess.CalledProcessError) as e:
+        # ffprobe not found or had trouble running.
+        return None
+
+    data = json.loads(p.stdout.decode('utf-8'))
+    duration = data.get('format', {}).get('duration', None)
+    if duration:
+        return round(float(duration))
+    else:
+        return None
+
+
 def fileToItem(host, fname, pubDate, use_metadata=False):
     '''
     Inspect a file name to determine what kind of RSS item to build, and
@@ -403,6 +449,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
              <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
           </item>
+    >>> # TODO: create a file with certain duration.
     '''
 
     fileURL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
@@ -416,9 +463,14 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
 
     title = getTitle(fname, use_metadata)
 
+    tags = [enclosure]
+    duration = getDuration(fname)
+    if duration:
+        tags.append({"name" : "itunes:duration" , "value" : str(duration)})
+
     return buildItem(link=fileURL, title=title,
                      guid=fileURL, description=title,
-                     pubDate=pubDate, extraTags=[enclosure])
+                     pubDate=pubDate, extraTags=tags)
 
 
 def main(argv=None):
