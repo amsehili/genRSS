@@ -154,7 +154,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     extraTags : a list of dictionaries
                 Each dictionary contains the following keys
-                - "na1me": name of the tag (mandatory)
+                - "name": name of the tag (mandatory)
                 - "value": value of the tag (optional)
                 - "params": string or list of string, parameters of the tag (optional)
 
