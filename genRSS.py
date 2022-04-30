@@ -608,7 +608,7 @@ def main(argv=None):
             outfp = sys.stdout
 
         outfp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
-        outfp.write('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom">\n')
+        outfp.write('<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">\n')
         outfp.write('   <channel>\n')
         outfp.write('      <atom:link href="{0}" rel="self" type="application/rss+xml" />\n'.format(link))
         outfp.write('      <title>{0}</title>\n'.format(saxutils.escape(title)))
