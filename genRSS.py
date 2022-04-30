@@ -32,7 +32,7 @@ TESTRUN = 0
 PROFILE = 0
 
 
-def getFiles(dirname, extensions=None, recursive=False):
+def getFiles(dirname, extensions=None, recursive=False, followlinks=False):
     '''
     Return the list of files (relative paths, starting from dirname) in a given directory.
 
@@ -50,6 +50,10 @@ def getFiles(dirname, extensions=None, recursive=False):
 
     recursive : bool
                 If True, recursively look for files in sub directories.
+                Default = False.
+
+    followlinks : bool
+                If True, follow symbolic links to directories during recursive scan.
                 Default = False.
 
     Returns
@@ -97,7 +101,7 @@ def getFiles(dirname, extensions=None, recursive=False):
     selectedFiles = []
     allFiles = []
     if recursive:
-        for root, dirs, filenames in os.walk(dirname):
+        for root, dirs, filenames in os.walk(dirname, followlinks=followlinks):
                 for name in filenames:
                     allFiles.append(os.path.join(root, name))
     else:
@@ -447,6 +451,10 @@ def main(argv=None):
                             help="Look for media files recursively in sub directories\n"
                                 "[Default:False]",
                             action="store_true", default=False)
+        parser.add_argument("-L", "--follow-symlinks", dest="followlinks",
+                            help="Follow symbolic links when doing a recursive scan\n"
+                                "[Default:False]",
+                            action="store_true", default=False)
 
         parser.add_argument("-e", "--extensions", dest="extensions",
                             help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg)\n[Default: all files]",
@@ -521,7 +529,7 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in  opts.extensions.split(",") if e != ""]
-        fileNames = getFiles(dirname, extensions=opts.extensions, recursive=opts.recursive)
+        fileNames = getFiles(dirname, extensions=opts.extensions, recursive=opts.recursive, followlinks=opts.followlinks)
         if len(fileNames) == 0:
             sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
             sys.exit(0)
