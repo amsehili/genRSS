@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 '''
-genRSS -- generate a RSS 2.0 feed from media files in a directory.
+genRSS -- generate an RSS 2.0 feed from media files in a directory.
 
 @author:     Amine SEHILI
 @copyright:  2014-2020 Amine SEHILI
@@ -114,7 +114,7 @@ def getFiles(dirname, extensions=None, recursive=False):
 
 def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
     '''
-    Generate a RSS 2.0 item and return it as a string.
+    Generate an RSS 2.0 item and return it as a string.
 
     Parameters
     ----------
@@ -141,7 +141,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
               - "Wed, 02 Oct 2002 08:00:00 EST"
               - "Mon, 22 Dec 2014 18:30:00 +0000"
 
-              You can use the following code to gererate a RFC-822 valid time:
+              You can use the following code to gererate an RFC-822 valid time:
               time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
               Default = None (no pubDate tag will be added to the generated item)
 
@@ -171,7 +171,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     Returns
     -------
-    A string representing a RSS 2.0 item.
+    A string representing an RSS 2.0 item.
 
     Examples
     --------
