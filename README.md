@@ -1,7 +1,7 @@
 # genRSS
 
 ### What is genRSS?
-genRSS takes a directory hosted on your website and generates an RSS 2 feed for all media files within the directory. It can operate recursively and look for media files in sub directories. Media files can also be restricted to a given set of extensions.
+genRSS takes a directory hosted on your website and generates an RSS 2.0 feed for all media files within the directory. It can operate recursively and look for media files in sub directories. Media files can also be restricted to a given set of extensions.
 
 ### How to use genRSS?
 Suppose you have a web server and a website hosted on that server. genRSS can be run on a given directory on the website to generate a feed from media files in the directory so you can access them with a podcast client.

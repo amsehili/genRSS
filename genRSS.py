@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 '''
-genRSS -- generate a RSS 2 feed from media files in a directory.
+genRSS -- generate a RSS 2.0 feed from media files in a directory.
 
 @author:     Amine SEHILI
 @copyright:  2014-2020 Amine SEHILI
@@ -114,7 +114,7 @@ def getFiles(dirname, extensions=None, recursive=False):
 
 def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
     '''
-    Generate a RSS 2 item and return it as a string.
+    Generate a RSS 2.0 item and return it as a string.
 
     Parameters
     ----------
@@ -171,7 +171,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     Returns
     -------
-    A string representing a RSS 2 item.
+    A string representing a RSS 2.0 item.
 
     Examples
     --------
