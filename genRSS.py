@@ -133,15 +133,15 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                  Default = ""
 
     pubDate : string
-              Date of publication of the item. Should follow the RFC-822 format,
+              Date of publication of the item. Should follow the RFC 822 format,
               otherwise the feed will not pass a validator.
               This method doses (yet) not check the compatibility of pubDate.
-              Here are a few examples of correct RFC-822 dates:
+              Here are a few examples of correct RFC 822 dates:
 
               - "Wed, 02 Oct 2002 08:00:00 EST"
               - "Mon, 22 Dec 2014 18:30:00 +0000"
 
-              You can use the following code to gererate an RFC-822 valid time:
+              You can use the following code to gererate an RFC 822 valid time:
               time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
               Default = None (no pubDate tag will be added to the generated item)
 
@@ -544,7 +544,7 @@ def main(argv=None):
             pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(fileNames))]
             sortedFiles = zip(fileNames, pubDates)
 
-        # write dates in RFC-822 format
+        # write dates in RFC 822 format
         sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sortedFiles)
 
         # build items
