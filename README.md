@@ -1,12 +1,12 @@
 # genRSS
 
 ### What is genRSS?
-genRSS takes a directory hosted on your website and generates an RSS 2 feed for all media files within the directory. It can operate recursively and look for media files in sub directories. Media files can also be restricted to a given set of extensions.
+genRSS takes a directory hosted on your website and generates an RSS 2.0 feed for all media files within the directory. It can operate recursively and look for media files in subdirectories. Media files can also be restricted to a given set of extensions.
 
 ### How to use genRSS?
-Suppose you have a web server and a website hosted on that server. genRSS can be run on a given directory on the website to generate a feed from media files in the directory so you can access them with a podcast reader.
+Suppose you have a web server and a website hosted on that server. genRSS can be run on a given directory on the website to generate a feed from media files in the directory so you can access them with a podcast client.
 
-The following command launches an HTTP server that serves the current directory
+The following command launches an HTTP server that serves the current directory:
 
     python3 -m http.server
 
@@ -28,7 +28,7 @@ The following command generates a feed for `mp3` files within `test/media` direc
 
     python3 genRSS.py -d test/media -e mp3 -t "My Podcast" -p "My Podcast Description" -o feed.rss
  
-feed.rss should now be visible on the web page. You can visit it or open it with a podcast reader.
+feed.rss should now be visible on the web page. You can visit it or open it with a podcast client.
 
 If no output file was given (option `-o`), the result would have been printed out on the standard output. It should look like:
 
@@ -70,7 +70,7 @@ If no output file was given (option `-o`), the result would have been printed ou
 
 ### Access your podcast from another machine/device:
 
-`localhost:8080` are you host name and your http server port respectively. This pair is automatically used by `genRSS` as prefix for items in the generated podcast. Alternatively, you can use your machine's IP address instead of localhost. This is particularly useful if you want to access your podcast from another machine or a mobile device that share the same network.
+`localhost:8080` are your host name and your http server port respectively. This pair is automatically used by `genRSS` as a prefix for items in the generated podcast. Alternatively, you can use your machine's IP address instead of localhost. This is particularly useful if you want to access your podcast from another machine or a mobile device that share the same network.
 
 **Example:**
 

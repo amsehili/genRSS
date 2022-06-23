@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 # encoding: utf-8
 '''
-genRSS -- generate a RSS 2 feed from media files in a directory.
+genRSS -- generate an RSS 2.0 feed from media files in a directory.
 
 @author:     Amine SEHILI
 @copyright:  2014-2020 Amine SEHILI
@@ -37,7 +37,7 @@ def getFiles(dirname, extensions=None, recursive=False):
     Return the list of files (relative paths, starting from dirname) in a given directory.
 
     Unless a list of the desired file extensions is given, all files in dirname are returned.
-    If recursive = True, also look for files in sub directories of dirname.
+    If recursive = True, also look for files in subdirectories of dirname.
 
     Parameters
     ----------
@@ -49,7 +49,7 @@ def getFiles(dirname, extensions=None, recursive=False):
                  Default = None (i.e. return all files).
 
     recursive : bool
-                If True, recursively look for files in sub directories.
+                If True, recursively look for files in subdirectories.
                 Default = False.
 
     Returns
@@ -114,7 +114,7 @@ def getFiles(dirname, extensions=None, recursive=False):
 
 def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
     '''
-    Generate a RSS 2 item and return it as a string.
+    Generate an RSS 2.0 item and return it as a string.
 
     Parameters
     ----------
@@ -133,28 +133,28 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                  Default = ""
 
     pubDate : string
-              Date of publication of the item. Should follow the RFC-822 format,
+              Date of publication of the item. Should follow the RFC 822 format,
               otherwise the feed will not pass a validator.
-              This method doses (yet) not check the compatibility of pubDate.
-              Here are a few examples of correct RFC-822 dates:
+              This method does not (yet) check the compatibility of pubDate.
+              Here are a few examples of correct RFC 822 dates:
 
               - "Wed, 02 Oct 2002 08:00:00 EST"
               - "Mon, 22 Dec 2014 18:30:00 +0000"
 
-              You can use the following code to gererate a RFC-822 valid time:
+              You can use the following code to gererate an RFC 822 valid time:
               time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
               Default = None (no pubDate tag will be added to the generated item)
 
     indent : string
-             A string of white spaces used to indent the elements of the item.
-             3 * len(indent) white spaces will be left before <guid>, <link>, <title> and <description>
+             A string of whitespaces used to indent the elements of the item.
+             3 * len(indent) whitespaces will be left before <guid>, <link>, <title> and <description>
              and 2 * len(indent) before item.
 
     extraTags : a list of dictionaries
                 Each dictionary contains the following keys
-                - "na1me": name of the tag (mandatory)
+                - "name": name of the tag (mandatory)
                 - "value": value of the tag (optional)
-                - "params": string or list of string, parameters of the tag (optional)
+                - "params": string or list of strings, parameters of the tag (optional)
 
                 Example:
                 -------
@@ -171,7 +171,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     Returns
     -------
-    A string representing a RSS 2 item.
+    A string representing an RSS 2.0 item.
 
     Examples
     --------
@@ -444,7 +444,7 @@ def main(argv=None):
                                 "to create absolute paths to your media files.",
                             metavar="DIRECTORY")
         parser.add_argument("-r", "--recursive", dest="recursive",
-                            help="Look for media files recursively in sub directories\n"
+                            help="Look for media files recursively in subdirectories\n"
                                 "[Default:False]",
                             action="store_true", default=False)
 
@@ -544,7 +544,7 @@ def main(argv=None):
             pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(fileNames))]
             sortedFiles = zip(fileNames, pubDates)
 
-        # write dates in RFC-822 format
+        # write dates in RFC 822 format
         sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sortedFiles)
 
         # build items
