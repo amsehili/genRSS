@@ -4,30 +4,29 @@
 genRSS -- generate an RSS 2.0 feed from media files in a directory.
 
 @author:     Amine SEHILI
-@copyright:  2014-2020 Amine SEHILI
+@copyright:  2014-2022 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: November 7th 2020
+@deffield    updated: July 24th 2022
 '''
 
 import sys
 import os
-import subprocess
 import glob
 import fnmatch
-import json
 import time
 import urllib
 import urllib.parse
 import mimetypes
 import argparse
 from xml.sax import saxutils
-from optparse import OptionParser
+
+from util import get_duration_mutagen, get_duration_sox, get_duration_ffprobe
 
 __all__ = []
 __version__ = 0.2
 __date__ = '2014-11-01'
-__updated__ = '2020-11-07'
+__updated__ = '2022-07-24'
 
 DEBUG = 0
 TESTRUN = 0
@@ -342,10 +341,15 @@ def getTitle(filename, use_metadata=False):
 
 def getDuration(filename):
     '''
-    Get the item duration from file, using the ffprobe tool.
+    Get item duration from media file using mutagen, sox or ffprobe in that
+    order. mutagen is tried first because it's a python package (so it doesn't
+    require running an external process), sox is tried before ffprobe because
+    it's faster, easier to install and return 0 for empty files.
+
 
     According to both Google and Apple, many formats are supported by the
-    <itunes:duration> tag: h:mm:ss, mm:ss, or just seconds as an integer.
+    <itunes:duration> tag such qs hh:mm:ss, mm:ss, or just the total number of
+    seconds as an integer. For more information see:
 
     https://support.google.com/podcast-publishers/answer/9889544?hl=en#recommended_episode
     https://help.apple.com/itc/podcasts_connect/#/itcb54353390
@@ -358,30 +362,28 @@ def getDuration(filename):
     Returns
     -------
     duration : int
-        The duration as the number of seconds. Or None.
+        The duration as the number of seconds or None.
 
     Examples
     --------
-    >>> media_dir = os.path.join("test", "media")
-    >>> empty_file = os.path.join(media_dir, 'flac_with_tags.flac')
-    >>> # TODO: create a file with certain duration.
-
-    >>> getDuration(empty_file) is None
+    >>> getDuration("test/silence/silence_7.14_seconds.ogg")
+    7
+    >>> getDuration("test/silence/silence_2.5_seconds.wav")
+    2
+    >>> getDuration("test/media/flac_with_tags.flac") # empty file
+    0
+    >>> getDuration("test/media/1.mp3") is None # invalid file
     True
     '''
-    args = ['ffprobe', '-show_entries', 'format=duration', '-of', 'json', filename]
-    try:
-        p = subprocess.run(args, capture_output=True, check=True)
-    except (FileNotFoundError, subprocess.CalledProcessError) as e:
-        # ffprobe not found or had trouble running.
-        return None
+    duration = get_duration_mutagen(filename)
+    if duration is not None:
+        return duration
 
-    data = json.loads(p.stdout.decode('utf-8'))
-    duration = data.get('format', {}).get('duration', None)
-    if duration:
-        return round(float(duration))
-    else:
-        return None
+    duration = get_duration_sox(filename)
+    if duration is not None:
+        return duration
+
+    return get_duration_ffprobe(filename)
 
 
 def fileToItem(host, fname, pubDate, use_metadata=False):
@@ -439,6 +441,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <description>mp3_with_tags</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
              <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
+             <itunes:duration>0</itunes:duration>
           </item>
     >>> print(fileToItem('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
           <item>
@@ -448,10 +451,20 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <description>Test media file with ID3 tags</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
              <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
+             <itunes:duration>0</itunes:duration>
           </item>
-    >>> # TODO: create a file with certain duration.
-    '''
+    >>> print(fileToItem('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
+          <item>
+             <guid>example.com/test/silence/silence_2.5_seconds.wav</guid>
+             <link>example.com/test/silence/silence_2.5_seconds.wav</link>
+             <title>silence_2.5_seconds</title>
+             <description>silence_2.5_seconds</description>
+             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+             <enclosure url="example.com/test/silence/silence_2.5_seconds.wav" type="audio/x-wav" length="220544"/>
+             <itunes:duration>2</itunes:duration>
+          </item>
 
+    '''
     fileURL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
     fileMimeType = mimetypes.guess_type(fname)[0]
 
@@ -465,7 +478,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
 
     tags = [enclosure]
     duration = getDuration(fname)
-    if duration:
+    if duration is not None:
         tags.append({"name" : "itunes:duration" , "value" : str(duration)})
 
     return buildItem(link=fileURL, title=title,
