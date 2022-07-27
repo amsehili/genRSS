@@ -33,7 +33,7 @@ TESTRUN = 0
 PROFILE = 0
 
 
-def getFiles(dirname, extensions=None, recursive=False):
+def get_files(dirname, extensions=None, recursive=False):
     '''
     Return the list of files (relative paths, starting from dirname) in a given directory.
 
@@ -55,7 +55,7 @@ def getFiles(dirname, extensions=None, recursive=False):
 
     Returns
     -------
-    selectedFiles : list
+    selected_files : list
                 A list of file paths.
 
     Examples
@@ -64,7 +64,7 @@ def getFiles(dirname, extensions=None, recursive=False):
     >>> media_dir = os.path.join("test", "media")
     >>> files =  ['1.mp3', '1.mp4', '1.ogg', '2.MP3', 'flac_with_tags.flac', 'mp3_with_tags.mp3']
     >>> expected = [os.path.join(media_dir, f) for f in files]
-    >>> getFiles(media_dir) == expected
+    >>> get_files(media_dir) == expected
     True
 
     >>> expected = [os.path.join(media_dir, f) for f in files]
@@ -72,48 +72,48 @@ def getFiles(dirname, extensions=None, recursive=False):
     >>> expected += [os.path.join(sd_1, f) for f in ['2.MP4', '3.mp3', '4.mp3']]
     >>> sd_2 = os.path.join(media_dir, "subdir_2")
     >>> expected += [os.path.join(sd_2, f) for f in ['4.mp4', '5.mp3', '6.mp3']]
-    >>> getFiles(media_dir, recursive=True) == expected
+    >>> get_files(media_dir, recursive=True) == expected
     True
 
     >>> files = ['1.mp3', '2.MP3', 'mp3_with_tags.mp3']
     >>> expected = [os.path.join(media_dir, f) for f in files]
-    >>> getFiles(media_dir, extensions=["mp3"]) == expected
+    >>> get_files(media_dir, extensions=["mp3"]) == expected
     True
 
     >>> files = ['1.mp3', '1.ogg', '2.MP3', 'mp3_with_tags.mp3']
     >>> expected = [os.path.join(media_dir, f) for f in files]
     >>> expected += [os.path.join(sd_1, f) for f in ['3.mp3', '4.mp3']]
     >>> expected += [os.path.join(sd_2, f) for f in ['5.mp3', '6.mp3']]
-    >>> getFiles(media_dir, extensions=["mp3", "ogg"], recursive=True) == expected
+    >>> get_files(media_dir, extensions=["mp3", "ogg"], recursive=True) == expected
     True
 
     >>> expected = [os.path.join(media_dir, '1.mp4'), os.path.join(sd_1, '2.MP4'), os.path.join(sd_2, '4.mp4')]
-    >>> getFiles(media_dir, extensions=["mp4"], recursive=True) == expected
+    >>> get_files(media_dir, extensions=["mp4"], recursive=True) == expected
     True
     '''
 
     if dirname[-1] != os.sep:
         dirname += os.sep
 
-    selectedFiles = []
-    allFiles = []
+    selected_files = []
+    all_files = []
     if recursive:
         for root, dirs, filenames in os.walk(dirname):
                 for name in filenames:
-                    allFiles.append(os.path.join(root, name))
+                    all_files.append(os.path.join(root, name))
     else:
-        allFiles = [f for f in glob.glob(dirname + "*") if os.path.isfile(f)]
+        all_files = [f for f in glob.glob(dirname + "*") if os.path.isfile(f)]
 
     if extensions is not None:
         for ext in set([e.lower() for e in extensions]):
-            selectedFiles += [n for n in allFiles if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))]
+            selected_files += [n for n in all_files if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))]
     else:
-        selectedFiles = allFiles
+        selected_files = all_files
 
-    return sorted(set(selectedFiles))
+    return sorted(set(selected_files))
 
 
-def buildItem(link, title, guid = None, description="", pubDate=None, indent = "   ", extraTags=None):
+def build_item(link, title, guid = None, description="", pub_Date=None, indent = "   ", extra_tags=None):
     '''
     Generate an RSS 2.0 item and return it as a string.
 
@@ -151,7 +151,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
              3 * len(indent) whitespaces will be left before <guid>, <link>, <title> and <description>
              and 2 * len(indent) before item.
 
-    extraTags : a list of dictionaries
+    extra_tags : a list of dictionaries
                 Each dictionary contains the following keys
                 - "name": name of the tag (mandatory)
                 - "value": value of the tag (optional)
@@ -176,7 +176,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
 
     Examples
     --------
-    >>> item = buildItem("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
+    >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
     ...                  description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000",
     ...                  indent = "   ")
     >>> print(item)
@@ -188,8 +188,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
              <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
           </item>
 
-    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-    ...                  extraTags=[{"name" : "itunes:duration" , "value" : "06:08"}])
+    >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+    ...                  extra_tags=[{"name" : "itunes:duration" , "value" : "06:08"}])
     >>> print(item)
       <item>
        <guid>my/web/site/media/item2</guid>
@@ -199,8 +199,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <itunes:duration>06:08</itunes:duration>
       </item>
 
-    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-    ...                  extraTags=[{"name" : "enclosure" ,
+    >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+    ...                  extra_tags=[{"name" : "enclosure" ,
     ...                              "params" : 'url="http://example.com/media/file.mp3"'
     ...                                         ' type="audio/mpeg" length="1234"'}])
     >>> print(item)
@@ -212,8 +212,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
        <enclosure url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"/>
       </item>
 
-    >>> item = buildItem("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-    ...                  extraTags= [{"name" : "enclosure", "value" : None,
+    >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+    ...                  extra_tags= [{"name" : "enclosure", "value" : None,
     ...                               "params" :  ['url="file.mp3"', 'type="audio/mpeg"',
     ...                                            'length="1234"']}])
     >>> print(item)
@@ -240,8 +240,8 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
         pubDate = ""
 
     extra = ""
-    if extraTags is not None:
-        for tag in extraTags:
+    if extra_tags is not None:
+        for tag in extra_tags:
             if tag is None:
                 continue
 
@@ -262,7 +262,7 @@ def buildItem(link, title, guid = None, description="", pubDate=None, indent = "
                                                             descrption, pubDate, extra)
 
 
-def getTitle(filename, use_metadata=False):
+def get_title(filename, use_metadata=False):
     '''
     Get item title from file. If use_metadata is True, try reading title from
     metadata otherwise return file name as the title (without extension).
@@ -286,13 +286,13 @@ def getTitle(filename, use_metadata=False):
     >>> flac_file = os.path.join(media_dir, 'flac_with_tags.flac')
     >>> mp3_file = os.path.join(media_dir, 'mp3_with_tags.mp3')
 
-    >>> getTitle(flac_file)
+    >>> get_title(flac_file)
     'flac_with_tags'
 
-    >>> getTitle(flac_file, True)
+    >>> get_title(flac_file, True)
     'Test FLAC file with tags'
 
-    >>> getTitle(mp3_file, True)
+    >>> get_title(mp3_file, True)
     'Test media file with ID3 tags'
     '''
     if use_metadata:
@@ -339,7 +339,7 @@ def getTitle(filename, use_metadata=False):
     return title
 
 
-def getDuration(filename):
+def get_duration(filename):
     '''
     Get item duration from media file using mutagen, sox or ffprobe in that
     order. mutagen is tried first because it's a python package (so it doesn't
@@ -366,13 +366,13 @@ def getDuration(filename):
 
     Examples
     --------
-    >>> getDuration("test/silence/silence_7.14_seconds.ogg")
+    >>> get_duration("test/silence/silence_7.14_seconds.ogg")
     7
-    >>> getDuration("test/silence/silence_2.5_seconds.wav")
+    >>> get_duration("test/silence/silence_2.5_seconds.wav")
     2
-    >>> getDuration("test/media/flac_with_tags.flac") # empty file
+    >>> get_duration("test/media/flac_with_tags.flac") # empty file
     0
-    >>> getDuration("test/media/1.mp3") is None # invalid file
+    >>> get_duration("test/media/1.mp3") is None # invalid file
     True
     '''
     duration = get_duration_mutagen(filename)
@@ -386,7 +386,7 @@ def getDuration(filename):
     return get_duration_ffprobe(filename)
 
 
-def fileToItem(host, fname, pubDate, use_metadata=False):
+def file_to_item(host, fname, pubDate, use_metadata=False):
     '''
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
@@ -404,11 +404,11 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
 
     Returns
     -------
-    A string representing an RSS item, as with buildItem.
+    A string representing an RSS item, as with build_item.
 
     Examples
     --------
-    >>> print(fileToItem('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+    >>> print(file_to_item('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/media/1.mp3</guid>
              <link>example.com/test/media/1.mp3</link>
@@ -417,7 +417,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
              <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
           </item>
-    >>> print(fileToItem('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+    >>> print(file_to_item('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/invalid/checksum.md5</guid>
              <link>example.com/test/invalid/checksum.md5</link>
@@ -425,7 +425,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <description>checksum</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
           </item>
-    >>> print(fileToItem('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+    >>> print(file_to_item('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/invalid/windows.exe</guid>
              <link>example.com/test/invalid/windows.exe</link>
@@ -433,7 +433,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <description>windows</description>
              <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
           </item>
-    >>> print(fileToItem('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+    >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
           <item>
              <guid>example.com/test/media/mp3_with_tags.mp3</guid>
              <link>example.com/test/media/mp3_with_tags.mp3</link>
@@ -443,7 +443,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
              <itunes:duration>0</itunes:duration>
           </item>
-    >>> print(fileToItem('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
+    >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
           <item>
              <guid>example.com/test/media/mp3_with_tags.mp3</guid>
              <link>example.com/test/media/mp3_with_tags.mp3</link>
@@ -453,7 +453,7 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
              <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
              <itunes:duration>0</itunes:duration>
           </item>
-    >>> print(fileToItem('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
+    >>> print(file_to_item('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
           <item>
              <guid>example.com/test/silence/silence_2.5_seconds.wav</guid>
              <link>example.com/test/silence/silence_2.5_seconds.wav</link>
@@ -465,25 +465,25 @@ def fileToItem(host, fname, pubDate, use_metadata=False):
           </item>
 
     '''
-    fileURL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
-    fileMimeType = mimetypes.guess_type(fname)[0]
+    file_URL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
+    file_mime_type = mimetypes.guess_type(fname)[0]
 
-    if fileMimeType is not None and ("audio" in fileMimeType or "video" in fileMimeType or "image" in fileMimeType):
-        tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(fileURL, fileMimeType, os.path.getsize(fname))
+    if file_mime_type is not None and ("audio" in file_mime_type or "video" in file_mime_type or "image" in file_mime_type):
+        tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(file_URL, file_mime_type, os.path.getsize(fname))
         enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
     else:
         enclosure = None
 
-    title = getTitle(fname, use_metadata)
+    title = get_title(fname, use_metadata)
 
     tags = [enclosure]
-    duration = getDuration(fname)
+    duration = get_duration(fname)
     if duration is not None:
         tags.append({"name" : "itunes:duration" , "value" : str(duration)})
 
-    return buildItem(link=fileURL, title=title,
-                     guid=fileURL, description=title,
-                     pubDate=pubDate, extraTags=tags)
+    return build_item(link=file_URL, title=title,
+                     guid=file_URL, description=title,
+                     pubDate=pubDate, extra_tags=tags)
 
 
 def main(argv=None):
@@ -586,34 +586,34 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in  opts.extensions.split(",") if e != ""]
-        fileNames = getFiles(dirname, extensions=opts.extensions, recursive=opts.recursive)
-        if len(fileNames) == 0:
+        file_names = get_files(dirname, extensions=opts.extensions, recursive=opts.recursive)
+        if len(file_names) == 0:
             sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
             sys.exit(0)
 
         if opts.sort_creation:
             # sort files by date of creation if required
             # get files date of creation in seconds
-            pubDates = [os.path.getmtime(f) for f in fileNames]
+            pubDates = [os.path.getmtime(f) for f in file_names]
             # most feed readers will use pubDate to sort items even if they are not sorted in the output file
             # for readability, we also sort fileNames according to pubDates in the feed.
-            sortedFiles = sorted(zip(fileNames, pubDates),key=lambda f: - f[1])
+            sorted_files = sorted(zip(file_names, pubDates),key=lambda f: - f[1])
 
         else:
             # in order to have feed items sorted by name, we give them artificial pubDates
-            # fileNames are already sorted (natural order), so we assume that the first item is published now
+            # file_names are already sorted (natural order), so we assume that the first item is published now
             # and the n-th item, (now - (n)) minutes and f seconds ago.
             # f is a random number of seconds between 0 and 10 (float)
             now = time.time()
             import random
-            pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(fileNames))]
-            sortedFiles = zip(fileNames, pubDates)
+            pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(file_names))]
+            sorted_files = zip(file_names, pubDates)
 
         # write dates in RFC 822 format
-        sortedFiles = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sortedFiles)
+        sorted_files = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sorted_files)
 
         # build items
-        items = [fileToItem(host, fname, pubDate, opts.use_metadata) for fname, pubDate in sortedFiles]
+        items = [file_to_item(host, fname, pubDate, opts.use_metadata) for fname, pubDate in sorted_files]
 
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
@@ -667,10 +667,10 @@ if __name__ == "__main__":
         import pstats
         profile_filename = 'genRSS_profile.txt'
         cProfile.run('main()', profile_filename)
-        statsfile = open("profile_stats.txt", "wb")
-        p = pstats.Stats(profile_filename, stream=statsfile)
+        stats_file = open("profile_stats.txt", "wb")
+        p = pstats.Stats(profile_filename, stream=stats_file)
         stats = p.strip_dirs().sort_stats('cumulative')
         stats.print_stats()
-        statsfile.close()
+        stats_file.close()
         sys.exit(0)
     sys.exit(main())
