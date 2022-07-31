@@ -7,7 +7,7 @@ genRSS -- generate an RSS 2.0 feed from media files in a directory.
 @copyright:  2014-2022 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: July 24th 2022
+@deffield    updated: July 29th 2022
 '''
 
 import sys
@@ -26,7 +26,7 @@ from util import get_duration_mutagen, get_duration_sox, get_duration_ffprobe
 __all__ = []
 __version__ = 0.2
 __date__ = '2014-11-01'
-__updated__ = '2022-07-24'
+__updated__ = '2022-07-29'
 
 DEBUG = 0
 TESTRUN = 0
@@ -113,7 +113,7 @@ def get_files(dirname, extensions=None, recursive=False):
     return sorted(set(selected_files))
 
 
-def build_item(link, title, guid = None, description="", pub_Date=None, indent = "   ", extra_tags=None):
+def build_item(link, title, guid = None, description="", pub_date=None, indent = "   ", extra_tags=None):
     '''
     Generate an RSS 2.0 item and return it as a string.
 
@@ -133,10 +133,10 @@ def build_item(link, title, guid = None, description="", pub_Date=None, indent =
                  Description of the item.
                  Default = ""
 
-    pubDate : string
+    pub_date : string
               Date of publication of the item. Should follow the RFC 822 format,
               otherwise the feed will not pass a validator.
-              This method does not (yet) check the compatibility of pubDate.
+              This method does not (yet) check the compatibility of pub_date.
               Here are a few examples of correct RFC 822 dates:
 
               - "Wed, 02 Oct 2002 08:00:00 EST"
@@ -177,7 +177,7 @@ def build_item(link, title, guid = None, description="", pub_Date=None, indent =
     Examples
     --------
     >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
-    ...                  description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000",
+    ...                  description="This is item 1", pub_date="Mon, 22 Dec 2014 18:30:00 +0000",
     ...                  indent = "   ")
     >>> print(item)
           <item>
@@ -234,10 +234,10 @@ def build_item(link, title, guid = None, description="", pub_Date=None, indent =
     title = "{0}<title>{1}</title>\n".format(indent * 3, saxutils.escape(title))
     descrption = "{0}<description>{1}</description>\n".format(indent * 3, saxutils.escape(description))
 
-    if pubDate is not None:
-        pubDate = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pubDate)
+    if pub_date is not None:
+        pub_date = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pub_date)
     else:
-        pubDate = ""
+        pub_date = ""
 
     extra = ""
     if extra_tags is not None:
@@ -259,7 +259,7 @@ def build_item(link, title, guid = None, description="", pub_Date=None, indent =
             extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
 
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title,
-                                                            descrption, pubDate, extra)
+                                                            descrption, pub_date, extra)
 
 
 def get_title(filename, use_metadata=False):
@@ -386,7 +386,7 @@ def get_duration(filename):
     return get_duration_ffprobe(filename)
 
 
-def file_to_item(host, fname, pubDate, use_metadata=False):
+def file_to_item(host, fname, pub_date, use_metadata=False):
     '''
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
@@ -399,7 +399,7 @@ def file_to_item(host, fname, pubDate, use_metadata=False):
     fname : string
             File name to inspect.
 
-    pubDate : string
+    pub_date : string
               Publication date in RFC 822 format.
 
     Returns
@@ -483,7 +483,7 @@ def file_to_item(host, fname, pubDate, use_metadata=False):
 
     return build_item(link=file_URL, title=title,
                      guid=file_URL, description=title,
-                     pubDate=pubDate, extra_tags=tags)
+                     pub_date=pub_date, extra_tags=tags)
 
 
 def main(argv=None):
@@ -594,10 +594,10 @@ def main(argv=None):
         if opts.sort_creation:
             # sort files by date of creation if required
             # get files date of creation in seconds
-            pubDates = [os.path.getmtime(f) for f in file_names]
+            pub_dates = [os.path.getmtime(f) for f in file_names]
             # most feed readers will use pubDate to sort items even if they are not sorted in the output file
             # for readability, we also sort fileNames according to pubDates in the feed.
-            sorted_files = sorted(zip(file_names, pubDates),key=lambda f: - f[1])
+            sorted_files = sorted(zip(file_names, pub_dates),key=lambda f: - f[1])
 
         else:
             # in order to have feed items sorted by name, we give them artificial pubDates
@@ -606,14 +606,14 @@ def main(argv=None):
             # f is a random number of seconds between 0 and 10 (float)
             now = time.time()
             import random
-            pubDates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(file_names))]
-            sorted_files = zip(file_names, pubDates)
+            pub_dates = [now - (60 * 60 * 24 * d + (random.random() * 10)) for d in range(len(file_names))]
+            sorted_files = zip(file_names, pub_dates)
 
         # write dates in RFC 822 format
         sorted_files = ((f[0], time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.gmtime(f[1]))) for f in sorted_files)
 
         # build items
-        items = [file_to_item(host, fname, pubDate, opts.use_metadata) for fname, pubDate in sorted_files]
+        items = [file_to_item(host, fname, pub_date, opts.use_metadata) for fname, pub_date in sorted_files]
 
         if opts.outfile is not None:
             outfp = open(opts.outfile,"w")
