@@ -3,6 +3,20 @@
 ### What is genRSS?
 genRSS takes a directory hosted on your website and generates an RSS 2.0 feed for all media files within the directory. It can operate recursively and look for media files in subdirectories. Media files can also be restricted to a given set of extensions.
 
+#### Media file duration
+In order to have file duration in your feed (via `<itunes:duration>` tag), make sure that one of the following is installed on your machine.
+- `mutagen`: preferred option because it's the fastest, can deal with audio and video files and it's a python module. For installation run:
+
+```
+pip install mutagen
+```
+
+- `sox`: can only handle audio files, runs faster then `ffprobe`
+- `ffprobe`: normally installed with ffmpeg, can deal with audio and video files but it the slowest of the three options
+
+In any case, if the program fails to get media duration with one tool, it'll fall back to the next one. If none if these is installed or if file duration could not be computed, no <itunes:duration>` tag will be inserted.
+
+
 ### How to use genRSS?
 Suppose you have a web server and a website hosted on that server. genRSS can be run on a given directory on the website to generate a feed from media files in the directory so you can access them with a podcast client.
 
