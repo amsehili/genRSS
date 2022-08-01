@@ -121,18 +121,12 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
        description (string): Description of the item.
             Default = ""
 
-<<<<<<< HEAD
-        pubDate (string): Date of publication of the item. Should follow the RFC 822 format,
+
+    pubDate (string): Date of publication of the item. Should follow the RFC 822 format,
             otherwise the feed will not pass a validator.
             This method does not (yet) check the compatibility of pubDate.
             Here are a few examples of correct RFC 822 dates:
-=======
-    pub_date : string
-              Date of publication of the item. Should follow the RFC 822 format,
-              otherwise the feed will not pass a validator.
-              This method does not (yet) check the compatibility of pub_date.
-              Here are a few examples of correct RFC 822 dates:
->>>>>>> origin/docstrings
+
 
             - "Wed, 02 Oct 2002 08:00:00 EST"
             - "Mon, 22 Dec 2014 18:30:00 +0000"
@@ -189,20 +183,6 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
            <itunes:duration>06:08</itunes:duration>
           </item>
 
-<<<<<<< HEAD
-        >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-        ...                  extra_tags=[{"name" : "enclosure" ,
-        ...                              "params" : 'url="http://example.com/media/file.mp3"'
-        ...                                         ' type="audio/mpeg" length="1234"'}])
-        >>> print(item)
-=======
-    Examples
-    --------
-    >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
-    ...                  description="This is item 1", pub_date="Mon, 22 Dec 2014 18:30:00 +0000",
-    ...                  indent = "   ")
-    >>> print(item)
->>>>>>> origin/docstrings
           <item>
            <guid>my/web/site/media/item2</guid>
            <link>my/web/site/media/item2</link>
@@ -446,80 +426,6 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
                  <enclosure url="example.com/test/silence/silence_2.5_seconds.wav" type="audio/x-wav" length="220544"/>
                  <itunes:duration>2</itunes:duration>
               </item>
-=======
-    Parameters
-    ----------
-    host : string
-           The hostname and directory to use for the link.
-
-    fname : string
-            File name to inspect.
-
-    pub_date : string
-              Publication date in RFC 822 format.
-
-    Returns
-    -------
-    A string representing an RSS item, as with build_item.
-
-    Examples
-    --------
-    >>> print(file_to_item('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/media/1.mp3</guid>
-             <link>example.com/test/media/1.mp3</link>
-             <title>1</title>
-             <description>1</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/invalid/checksum.md5</guid>
-             <link>example.com/test/invalid/checksum.md5</link>
-             <title>checksum</title>
-             <description>checksum</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/invalid/windows.exe</guid>
-             <link>example.com/test/invalid/windows.exe</link>
-             <title>windows</title>
-             <description>windows</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/media/mp3_with_tags.mp3</guid>
-             <link>example.com/test/media/mp3_with_tags.mp3</link>
-             <title>mp3_with_tags</title>
-             <description>mp3_with_tags</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
-             <itunes:duration>0</itunes:duration>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
-          <item>
-             <guid>example.com/test/media/mp3_with_tags.mp3</guid>
-             <link>example.com/test/media/mp3_with_tags.mp3</link>
-             <title>Test media file with ID3 tags</title>
-             <description>Test media file with ID3 tags</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
-             <itunes:duration>0</itunes:duration>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
-          <item>
-             <guid>example.com/test/silence/silence_2.5_seconds.wav</guid>
-             <link>example.com/test/silence/silence_2.5_seconds.wav</link>
-             <title>silence_2.5_seconds</title>
-             <description>silence_2.5_seconds</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/silence/silence_2.5_seconds.wav" type="audio/x-wav" length="220544"/>
-             <itunes:duration>2</itunes:duration>
-          </item>
->>>>>>> origin/docstrings
 
     '''
     file_URL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
