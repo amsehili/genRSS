@@ -40,57 +40,50 @@ def get_files(dirname, extensions=None, recursive=False):
     Unless a list of the desired file extensions is given, all files in dirname are returned.
     If recursive = True, also look for files in subdirectories of dirname.
 
-    Parameters
-    ----------
-    dirname : string
-              path to a directory under the file system.
+    Args:
+        dirname (string): path to a directory under the file system.
 
-    extensions : list of string
-                 Extensions of the accepted files.
-                 Default = None (i.e. return all files).
+        extensions (list of string): Extensions of the accepted files.
+            Default = None (i.e. return all files).
 
-    recursive : bool
-                If True, recursively look for files in subdirectories.
-                Default = False.
+        recursive (bool): If True, recursively look for files in subdirectories.
+            Default = False.
 
-    Returns
-    -------
-    selected_files : list
-                A list of file paths.
+    Returns:
+        selected_files (list): A list of file paths.
 
-    Examples
-    --------
-    >>> import os
-    >>> media_dir = os.path.join("test", "media")
-    >>> files =  ['1.mp3', '1.mp4', '1.ogg', '2.MP3', 'flac_with_tags.flac', 'mp3_with_tags.mp3']
-    >>> expected = [os.path.join(media_dir, f) for f in files]
-    >>> get_files(media_dir) == expected
-    True
+    Examples:
+        >>> import os
+        >>> media_dir = os.path.join("test", "media")
+        >>> files =  ['1.mp3', '1.mp4', '1.ogg', '2.MP3', 'flac_with_tags.flac', 'mp3_with_tags.mp3']
+        >>> expected = [os.path.join(media_dir, f) for f in files]
+        >>> get_files(media_dir) == expected
+        True
 
-    >>> expected = [os.path.join(media_dir, f) for f in files]
-    >>> sd_1 = os.path.join(media_dir, "subdir_1")
-    >>> expected += [os.path.join(sd_1, f) for f in ['2.MP4', '3.mp3', '4.mp3']]
-    >>> sd_2 = os.path.join(media_dir, "subdir_2")
-    >>> expected += [os.path.join(sd_2, f) for f in ['4.mp4', '5.mp3', '6.mp3']]
-    >>> get_files(media_dir, recursive=True) == expected
-    True
+        >>> expected = [os.path.join(media_dir, f) for f in files]
+        >>> sd_1 = os.path.join(media_dir, "subdir_1")
+        >>> expected += [os.path.join(sd_1, f) for f in ['2.MP4', '3.mp3', '4.mp3']]
+        >>> sd_2 = os.path.join(media_dir, "subdir_2")
+        >>> expected += [os.path.join(sd_2, f) for f in ['4.mp4', '5.mp3', '6.mp3']]
+        >>> get_files(media_dir, recursive=True) == expected
+        True
 
-    >>> files = ['1.mp3', '2.MP3', 'mp3_with_tags.mp3']
-    >>> expected = [os.path.join(media_dir, f) for f in files]
-    >>> get_files(media_dir, extensions=["mp3"]) == expected
-    True
+        >>> files = ['1.mp3', '2.MP3', 'mp3_with_tags.mp3']
+        >>> expected = [os.path.join(media_dir, f) for f in files]
+        >>> get_files(media_dir, extensions=["mp3"]) == expected
+        True
 
-    >>> files = ['1.mp3', '1.ogg', '2.MP3', 'mp3_with_tags.mp3']
-    >>> expected = [os.path.join(media_dir, f) for f in files]
-    >>> expected += [os.path.join(sd_1, f) for f in ['3.mp3', '4.mp3']]
-    >>> expected += [os.path.join(sd_2, f) for f in ['5.mp3', '6.mp3']]
-    >>> get_files(media_dir, extensions=["mp3", "ogg"], recursive=True) == expected
-    True
+        >>> files = ['1.mp3', '1.ogg', '2.MP3', 'mp3_with_tags.mp3']
+        >>> expected = [os.path.join(media_dir, f) for f in files]
+        >>> expected += [os.path.join(sd_1, f) for f in ['3.mp3', '4.mp3']]
+        >>> expected += [os.path.join(sd_2, f) for f in ['5.mp3', '6.mp3']]
+        >>> get_files(media_dir, extensions=["mp3", "ogg"], recursive=True) == expected
+        True
 
-    >>> expected = [os.path.join(media_dir, '1.mp4'), os.path.join(sd_1, '2.MP4'), os.path.join(sd_2, '4.mp4')]
-    >>> get_files(media_dir, extensions=["mp4"], recursive=True) == expected
-    True
-    '''
+        >>> expected = [os.path.join(media_dir, '1.mp4'), os.path.join(sd_1, '2.MP4'), os.path.join(sd_2, '4.mp4')]
+        >>> get_files(media_dir, extensions=["mp4"], recursive=True) == expected
+        True
+        '''
 
     if dirname[-1] != os.sep:
         dirname += os.sep
@@ -117,48 +110,39 @@ def build_item(link, title, guid = None, description="", pub_Date=None, indent =
     '''
     Generate an RSS 2.0 item and return it as a string.
 
-    Parameters
-    ----------
-    link : string
-           URL of the item.
+    Args:
+        link (string): URL of the item.
 
-    title : string
-            Title of the item.
+        title (string): Title of the item.
 
-    guid : string
-           Unique identifier of the item. If no guid is given, link is used as the identifier.
-           Default = None.
+        guid (string): Unique identifier of the item. If no guid is given, link is used as the identifier.
+            Default = None.
 
-   description : string
-                 Description of the item.
-                 Default = ""
+       description (string): Description of the item.
+            Default = ""
 
-    pubDate : string
-              Date of publication of the item. Should follow the RFC 822 format,
-              otherwise the feed will not pass a validator.
-              This method does not (yet) check the compatibility of pubDate.
-              Here are a few examples of correct RFC 822 dates:
+        pubDate (string): Date of publication of the item. Should follow the RFC 822 format,
+            otherwise the feed will not pass a validator.
+            This method does not (yet) check the compatibility of pubDate.
+            Here are a few examples of correct RFC 822 dates:
 
-              - "Wed, 02 Oct 2002 08:00:00 EST"
-              - "Mon, 22 Dec 2014 18:30:00 +0000"
+            - "Wed, 02 Oct 2002 08:00:00 EST"
+            - "Mon, 22 Dec 2014 18:30:00 +0000"
 
-              You can use the following code to gererate an RFC 822 valid time:
-              time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
-              Default = None (no pubDate tag will be added to the generated item)
+            You can use the following code to gererate an RFC 822 valid time:
+            time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
+            Default = None (no pubDate tag will be added to the generated item)
 
-    indent : string
-             A string of whitespaces used to indent the elements of the item.
-             3 * len(indent) whitespaces will be left before <guid>, <link>, <title> and <description>
-             and 2 * len(indent) before item.
+        indent (string): A string of whitespaces used to indent the elements of the item.
+            3 * len(indent) whitespaces will be left before <guid>, <link>, <title> and <description>
+            and 2 * len(indent) before item.
 
-    extra_tags : a list of dictionaries
-                Each dictionary contains the following keys
-                - "name": name of the tag (mandatory)
-                - "value": value of the tag (optional)
-                - "params": string or list of strings, parameters of the tag (optional)
+        extra_tags (list of dictionaries): Each dictionary contains the following keys
+            - "name": name of the tag (mandatory)
+            - "value": value of the tag (optional)
+            - "params": string or list of strings, parameters of the tag (optional)
 
-                Example:
-                -------
+            Example:
                 Either of the following two dictionaries:
                    {"name" : enclosure, "value" : None, "params" : 'url="file.mp3" type="audio/mpeg" length="1234"'}
                    {"name" : enclosure, "value" : None, "params" : ['url="file.mp3"', 'type="audio/mpeg"', 'length="1234"']}
@@ -170,60 +154,58 @@ def build_item(link, title, guid = None, description="", pub_Date=None, indent =
                 would give this tag:
                    <aTag>aValue</aTag>
 
-    Returns
-    -------
-    A string representing an RSS 2.0 item.
+    Returns:
+        A string representing an RSS 2.0 item.
 
-    Examples
-    --------
-    >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
-    ...                  description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000",
-    ...                  indent = "   ")
-    >>> print(item)
+    Examples:
+        >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
+        ...                  description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000",
+        ...                  indent = "   ")
+        >>> print(item)
+              <item>
+                 <guid>item1</guid>
+                 <link>my/web/site/media/item1</link>
+                 <title>Title of item 1</title>
+                 <description>This is item 1</description>
+                 <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
+              </item>
+
+        >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+        ...                  extra_tags=[{"name" : "itunes:duration" , "value" : "06:08"}])
+        >>> print(item)
           <item>
-             <guid>item1</guid>
-             <link>my/web/site/media/item1</link>
-             <title>Title of item 1</title>
-             <description>This is item 1</description>
-             <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
+           <guid>my/web/site/media/item2</guid>
+           <link>my/web/site/media/item2</link>
+           <title>Title of item 2</title>
+           <description></description>
+           <itunes:duration>06:08</itunes:duration>
           </item>
 
-    >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-    ...                  extra_tags=[{"name" : "itunes:duration" , "value" : "06:08"}])
-    >>> print(item)
-      <item>
-       <guid>my/web/site/media/item2</guid>
-       <link>my/web/site/media/item2</link>
-       <title>Title of item 2</title>
-       <description></description>
-       <itunes:duration>06:08</itunes:duration>
-      </item>
+        >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+        ...                  extra_tags=[{"name" : "enclosure" ,
+        ...                              "params" : 'url="http://example.com/media/file.mp3"'
+        ...                                         ' type="audio/mpeg" length="1234"'}])
+        >>> print(item)
+          <item>
+           <guid>my/web/site/media/item2</guid>
+           <link>my/web/site/media/item2</link>
+           <title>Title of item 2</title>
+           <description></description>
+           <enclosure url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"/>
+          </item>
 
-    >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-    ...                  extra_tags=[{"name" : "enclosure" ,
-    ...                              "params" : 'url="http://example.com/media/file.mp3"'
-    ...                                         ' type="audio/mpeg" length="1234"'}])
-    >>> print(item)
-      <item>
-       <guid>my/web/site/media/item2</guid>
-       <link>my/web/site/media/item2</link>
-       <title>Title of item 2</title>
-       <description></description>
-       <enclosure url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"/>
-      </item>
-
-    >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-    ...                  extra_tags= [{"name" : "enclosure", "value" : None,
-    ...                               "params" :  ['url="file.mp3"', 'type="audio/mpeg"',
-    ...                                            'length="1234"']}])
-    >>> print(item)
-      <item>
-       <guid>my/web/site/media/item2</guid>
-       <link>my/web/site/media/item2</link>
-       <title>Title of item 2</title>
-       <description></description>
-       <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
-      </item>
+        >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
+        ...                  extra_tags= [{"name" : "enclosure", "value" : None,
+        ...                               "params" :  ['url="file.mp3"', 'type="audio/mpeg"',
+        ...                                            'length="1234"']}])
+        >>> print(item)
+          <item>
+           <guid>my/web/site/media/item2</guid>
+           <link>my/web/site/media/item2</link>
+           <title>Title of item 2</title>
+           <description></description>
+           <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
+          </item>
     '''
 
     if guid is None:
@@ -267,33 +249,27 @@ def get_title(filename, use_metadata=False):
     Get item title from file. If use_metadata is True, try reading title from
     metadata otherwise return file name as the title (without extension).
 
-    Parameters
-    ----------
-    filename : string
-        Path to a file.
+    Args:
+        filename (string): Path to a file.
 
-    use_metadata : bool
-        Whether to use metadata. Default: False.
+        use_metadata (bool): Whether to use metadata. Default: False.
 
-    Returns
-    -------
-    title : string
-        Item title.
+    Returns:
+        title (string): Item title.
 
-    Examples
-    --------
-    >>> media_dir = os.path.join("test", "media")
-    >>> flac_file = os.path.join(media_dir, 'flac_with_tags.flac')
-    >>> mp3_file = os.path.join(media_dir, 'mp3_with_tags.mp3')
+    Examples:
+        >>> media_dir = os.path.join("test", "media")
+        >>> flac_file = os.path.join(media_dir, 'flac_with_tags.flac')
+        >>> mp3_file = os.path.join(media_dir, 'mp3_with_tags.mp3')
 
-    >>> get_title(flac_file)
-    'flac_with_tags'
+        >>> get_title(flac_file)
+        'flac_with_tags'
 
-    >>> get_title(flac_file, True)
-    'Test FLAC file with tags'
+        >>> get_title(flac_file, True)
+        'Test FLAC file with tags'
 
-    >>> get_title(mp3_file, True)
-    'Test media file with ID3 tags'
+        >>> get_title(mp3_file, True)
+        'Test media file with ID3 tags'
     '''
     if use_metadata:
         try:
@@ -354,26 +330,21 @@ def get_duration(filename):
     https://support.google.com/podcast-publishers/answer/9889544?hl=en#recommended_episode
     https://help.apple.com/itc/podcasts_connect/#/itcb54353390
 
-    Parameters
-    ----------
-    filename : string
-        Path to a file.
+    Args:
+        filename (string): Path to a file.
 
-    Returns
-    -------
-    duration : int
-        The duration as the number of seconds or None.
+    Returns:
+        duration (int): The duration as the number of seconds or None.
 
-    Examples
-    --------
-    >>> get_duration("test/silence/silence_7.14_seconds.ogg")
-    7
-    >>> get_duration("test/silence/silence_2.5_seconds.wav")
-    2
-    >>> get_duration("test/media/flac_with_tags.flac") # empty file
-    0
-    >>> get_duration("test/media/1.mp3") is None # invalid file
-    True
+    Examples:
+        >>> get_duration("test/silence/silence_7.14_seconds.ogg")
+        7
+        >>> get_duration("test/silence/silence_2.5_seconds.wav")
+        2
+        >>> get_duration("test/media/flac_with_tags.flac") # empty file
+        0
+        >>> get_duration("test/media/1.mp3") is None # invalid file
+        True
     '''
     duration = get_duration_mutagen(filename)
     if duration is not None:
@@ -391,78 +362,72 @@ def file_to_item(host, fname, pubDate, use_metadata=False):
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
 
-    Parameters
-    ----------
-    host : string
-           The hostname and directory to use for the link.
+    Args:
+        host (string): The hostname and directory to use for the link.
 
-    fname : string
-            File name to inspect.
+        fname (string): File name to inspect.
 
-    pubDate : string
-              Publication date in RFC 822 format.
+        pubDate (string): Publication date in RFC 822 format.
 
-    Returns
-    -------
-    A string representing an RSS item, as with build_item.
+    Returns:
+        A string representing an RSS item, as with build_item.
 
-    Examples
-    --------
-    >>> print(file_to_item('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/media/1.mp3</guid>
-             <link>example.com/test/media/1.mp3</link>
-             <title>1</title>
-             <description>1</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/invalid/checksum.md5</guid>
-             <link>example.com/test/invalid/checksum.md5</link>
-             <title>checksum</title>
-             <description>checksum</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/invalid/windows.exe</guid>
-             <link>example.com/test/invalid/windows.exe</link>
-             <title>windows</title>
-             <description>windows</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-          <item>
-             <guid>example.com/test/media/mp3_with_tags.mp3</guid>
-             <link>example.com/test/media/mp3_with_tags.mp3</link>
-             <title>mp3_with_tags</title>
-             <description>mp3_with_tags</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
-             <itunes:duration>0</itunes:duration>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
-          <item>
-             <guid>example.com/test/media/mp3_with_tags.mp3</guid>
-             <link>example.com/test/media/mp3_with_tags.mp3</link>
-             <title>Test media file with ID3 tags</title>
-             <description>Test media file with ID3 tags</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
-             <itunes:duration>0</itunes:duration>
-          </item>
-    >>> print(file_to_item('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
-          <item>
-             <guid>example.com/test/silence/silence_2.5_seconds.wav</guid>
-             <link>example.com/test/silence/silence_2.5_seconds.wav</link>
-             <title>silence_2.5_seconds</title>
-             <description>silence_2.5_seconds</description>
-             <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-             <enclosure url="example.com/test/silence/silence_2.5_seconds.wav" type="audio/x-wav" length="220544"/>
-             <itunes:duration>2</itunes:duration>
-          </item>
+    Examples:
+        >>> print(file_to_item('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+              <item>
+                 <guid>example.com/test/media/1.mp3</guid>
+                 <link>example.com/test/media/1.mp3</link>
+                 <title>1</title>
+                 <description>1</description>
+                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+                 <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
+              </item>
+        >>> print(file_to_item('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+              <item>
+                 <guid>example.com/test/invalid/checksum.md5</guid>
+                 <link>example.com/test/invalid/checksum.md5</link>
+                 <title>checksum</title>
+                 <description>checksum</description>
+                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+              </item>
+        >>> print(file_to_item('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+              <item>
+                 <guid>example.com/test/invalid/windows.exe</guid>
+                 <link>example.com/test/invalid/windows.exe</link>
+                 <title>windows</title>
+                 <description>windows</description>
+                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+              </item>
+        >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+              <item>
+                 <guid>example.com/test/media/mp3_with_tags.mp3</guid>
+                 <link>example.com/test/media/mp3_with_tags.mp3</link>
+                 <title>mp3_with_tags</title>
+                 <description>mp3_with_tags</description>
+                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+                 <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
+                 <itunes:duration>0</itunes:duration>
+              </item>
+        >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
+              <item>
+                 <guid>example.com/test/media/mp3_with_tags.mp3</guid>
+                 <link>example.com/test/media/mp3_with_tags.mp3</link>
+                 <title>Test media file with ID3 tags</title>
+                 <description>Test media file with ID3 tags</description>
+                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+                 <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
+                 <itunes:duration>0</itunes:duration>
+              </item>
+        >>> print(file_to_item('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
+              <item>
+                 <guid>example.com/test/silence/silence_2.5_seconds.wav</guid>
+                 <link>example.com/test/silence/silence_2.5_seconds.wav</link>
+                 <title>silence_2.5_seconds</title>
+                 <description>silence_2.5_seconds</description>
+                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
+                 <enclosure url="example.com/test/silence/silence_2.5_seconds.wav" type="audio/x-wav" length="220544"/>
+                 <itunes:duration>2</itunes:duration>
+              </item>
 
     '''
     file_URL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
