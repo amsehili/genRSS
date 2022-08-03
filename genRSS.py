@@ -41,9 +41,9 @@ def get_files(dirname, extensions=None, recursive=False):
     If recursive = True, also look for files in subdirectories of dirname.
 
     Args:
-        dirname (string): path to a directory under the file system.
+        dirname (str): path to a directory under the file system.
 
-        extensions (list of string): Extensions of the accepted files.
+        extensions (list of str): Extensions of the accepted files.
             Default = None (i.e. return all files).
 
         recursive (bool): If True, recursively look for files in subdirectories.
@@ -111,18 +111,18 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
     Generate an RSS 2.0 item and return it as a string.
 
     Args:
-        link (string): URL of the item.
+        link (str): URL of the item.
 
-        title (string): Title of the item.
+        title (str): Title of the item.
 
-        guid (string): Unique identifier of the item. If no guid is given, link is used as the identifier.
+        guid (str): Unique identifier of the item. If no guid is given, link is used as the identifier.
             Default = None.
 
-       description (string): Description of the item.
+       description (str): Description of the item.
             Default = ""
 
 
-    pubDate (string): Date of publication of the item. Should follow the RFC 822 format,
+    pub_date (str): Date of publication of the item. Should follow the RFC 822 format,
             otherwise the feed will not pass a validator.
             This method does not (yet) check the compatibility of pubDate.
             Here are a few examples of correct RFC 822 dates:
@@ -135,7 +135,7 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
             time.strftime("%a, %d %b %Y %H:%M:%S +0000", time.localtime(time.time()))
             Default = None (no pubDate tag will be added to the generated item)
 
-        indent (string): A string of whitespaces used to indent the elements of the item.
+        indent (str): A string of whitespaces used to indent the elements of the item.
             3 * len(indent) whitespaces will be left before <guid>, <link>, <title> and <description>
             and 2 * len(indent) before item.
 
@@ -161,7 +161,7 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
 
     Examples:
         >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
-        ...                  description="This is item 1", pubDate="Mon, 22 Dec 2014 18:30:00 +0000",
+        ...                  description="This is item 1", pub_date="Mon, 22 Dec 2014 18:30:00 +0000",
         ...                  indent = "   ")
         >>> print(item)
               <item>
@@ -204,7 +204,6 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
            <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
           </item>
     '''
-
     if guid is None:
         guid = link
 
@@ -239,20 +238,18 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
 
     return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title,
                                                             descrption, pub_date, extra)
-
-
 def get_title(filename, use_metadata=False):
     '''
     Get item title from file. If use_metadata is True, try reading title from
     metadata otherwise return file name as the title (without extension).
 
     Args:
-        filename (string): Path to a file.
+        filename (str): Path to a file.
 
         use_metadata (bool): Whether to use metadata. Default: False.
 
     Returns:
-        title (string): Item title.
+        title (str): Item title.
 
     Examples:
         >>> media_dir = os.path.join("test", "media")
@@ -328,7 +325,7 @@ def get_duration(filename):
     https://help.apple.com/itc/podcasts_connect/#/itcb54353390
 
     Args:
-        filename (string): Path to a file.
+        filename (str): Path to a file.
 
     Returns:
         duration (int): The duration as the number of seconds or None.
@@ -359,13 +356,13 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
 
-<<<<<<< HEAD
+
     Args:
-        host (string): The hostname and directory to use for the link.
+        host (str): The hostname and directory to use for the link.
 
-        fname (string): File name to inspect.
+        fname (str): File name to inspect.
 
-        pubDate (string): Publication date in RFC 822 format.
+        pub_date (str): Publication date in RFC 822 format.
 
     Returns:
         A string representing an RSS item, as with build_item.
