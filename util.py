@@ -9,6 +9,14 @@ except ImportError:
 
 
 def _run_command(args):
+    """Helper function to run un external program.
+
+    Args:
+        args (list): List of arguments. The 1st argument should be program name.
+
+    Returns:
+        output (str): Program output.
+    """
     try:
         output = subprocess.run(
             args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
@@ -24,15 +32,11 @@ def get_duration_mutagen(filename):
     """Get file duration in seconds using mutagen. If mutagen is not installed
     or media file is not valid, return None.
 
-    Parameters
-    ----------
-    filename : string
-        Path to a file.
+    Args:
+        filename (str): Path to a file.
 
-    Returns
-    -------
-    duration : int
-        File duration in seconds or None.
+    Returns:
+        duration (int): File duration in seconds or None.
     """
     if _MUTAGEN:
         try:
@@ -48,15 +52,12 @@ def get_duration_sox(filename):
     """Get file duration in seconds using sox. If sox is not installed or media
     file is not valid, return None.
 
-    Parameters
-    ----------
-    filename : string
-        Path to a file.
+    Args:
+        filename (str): Path to a file.
 
-    Returns
-    -------
-    duration : int
-        File duration in seconds or None if no duration could be exracted.
+    Returns:
+        duration (int): File duration in seconds or None if no duration could
+            be exracted.
     """
     duration_str = _run_command(["soxi", "-D", filename])
     if duration_str is not None:
@@ -70,15 +71,12 @@ def get_duration_ffprobe(filename):
     """Get file duration in seconds using ffprobe. If ffprobe is not installed
     or media file is not valid, return None.
 
-    Parameters
-    ----------
-    filename : string
-        Path to a file.
+    Args:
+        filename (str): Path to a file.
 
-    Returns
-    -------
-    duration : int
-        File duration in seconds or None if no duration could be exracted.
+    Returns:
+        duration (int): File duration in seconds or None if no duration could be
+            exracted.
     """
     duration_str = _run_command(
         [

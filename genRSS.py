@@ -7,7 +7,7 @@ genRSS -- generate an RSS 2.0 feed from media files in a directory.
 @copyright:  2014-2022 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: July 29th 2022
+@deffield    updated: August 3rd 2022
 '''
 
 import sys
@@ -26,7 +26,7 @@ from util import get_duration_mutagen, get_duration_sox, get_duration_ffprobe
 __all__ = []
 __version__ = 0.2
 __date__ = '2014-11-01'
-__updated__ = '2022-07-29'
+__updated__ = '2022-08-03'
 
 DEBUG = 0
 TESTRUN = 0
