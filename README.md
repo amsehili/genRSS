@@ -11,7 +11,7 @@ In order to have file duration in your feed (via `<itunes:duration>` tag), make 
 pip install mutagen
 ```
 
-- `sox`: can only handle audio files, runs faster then `ffprobe`.
+- `sox`: can only handle audio files, runs faster than `ffprobe`.
 - `ffprobe`: normally installed with `ffmpeg`, can deal with audio and video files but it the slowest of the three options.
 
 In any case, if the program fails to get media duration with one tool, it'll fall back to the next one. If none if these is installed or if file duration could not be obtained, no `<itunes:duration>` tag will be inserted.
