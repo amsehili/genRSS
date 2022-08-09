@@ -103,8 +103,9 @@ def get_duration_ffprobe(filename):
         except ValueError:
             return None
 
+
 def file_to_item(host, fname, pub_date, use_metadata=False):
-    '''
+    """
     Inspect a file name to determine what kind of RSS item to build, and
     return the built item.
 
@@ -176,13 +177,19 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
                  <itunes:duration>2</itunes:duration>
               </item>
 
-    '''
+    """
     file_URL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
     file_mime_type = mimetypes.guess_type(fname)[0]
 
-    if file_mime_type is not None and ("audio" in file_mime_type or "video" in file_mime_type or "image" in file_mime_type):
-        tagParams = "url=\"{0}\" type=\"{1}\" length=\"{2}\"".format(file_URL, file_mime_type, os.path.getsize(fname))
-        enclosure = {"name" : "enclosure", "value" : None, "params": tagParams}
+    if file_mime_type is not None and (
+        "audio" in file_mime_type
+        or "video" in file_mime_type
+        or "image" in file_mime_type
+    ):
+        tagParams = 'url="{0}" type="{1}" length="{2}"'.format(
+            file_URL, file_mime_type, os.path.getsize(fname)
+        )
+        enclosure = {"name": "enclosure", "value": None, "params": tagParams}
     else:
         enclosure = None
 
@@ -191,14 +198,20 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
     tags = [enclosure]
     duration = get_duration(fname)
     if duration is not None:
-        tags.append({"name" : "itunes:duration" , "value" : str(duration)})
+        tags.append({"name": "itunes:duration", "value": str(duration)})
 
-    return build_item(link=file_URL, title=title,
-                     guid=file_URL, description=title,
-                     pub_date=pub_date, extra_tags=tags)
+    return build_item(
+        link=file_URL,
+        title=title,
+        guid=file_URL,
+        description=title,
+        pub_date=pub_date,
+        extra_tags=tags,
+    )
+
 
 def get_title(filename, use_metadata=False):
-    '''
+    """
     Get item title from file. If use_metadata is True, try reading title from
     metadata otherwise return file name as the title (without extension).
 
@@ -223,11 +236,12 @@ def get_title(filename, use_metadata=False):
 
         >>> get_title(mp3_file, True)
         'Test media file with ID3 tags'
-    '''
+    """
     if use_metadata:
         try:
             # file with ID3 tags
             import eyed3
+
             meta = eyed3.load(filename)
             if meta and meta.tag is not None:
                 return meta.tag.title
@@ -238,6 +252,7 @@ def get_title(filename, use_metadata=False):
             import mutagen
             from mutagen import id3, mp4, easyid3, easymp4
             from mutagen.mp3 import HeaderNotFoundError
+
             try:
                 # file with ID3 tags
                 title = easyid3.EasyID3(filename)["title"]
@@ -267,8 +282,9 @@ def get_title(filename, use_metadata=False):
     title, _ = os.path.splitext(filename)
     return title
 
+
 def get_duration(filename):
-    '''
+    """
     Get item duration from media file using mutagen, sox or ffprobe in that
     order. mutagen is tried first because it's a python package (so it doesn't
     require running an external process), sox is tried before ffprobe because
@@ -297,7 +313,7 @@ def get_duration(filename):
         0
         >>> get_duration("test/media/1.mp3") is None # invalid file
         True
-    '''
+    """
     duration = get_duration_mutagen(filename)
     if duration is not None:
         return duration
@@ -308,8 +324,17 @@ def get_duration(filename):
 
     return get_duration_ffprobe(filename)
 
-def build_item(link, title, guid = None, description="", pub_date=None, indent = "   ", extra_tags=None):
-    '''
+
+def build_item(
+    link,
+    title,
+    guid=None,
+    description="",
+    pub_date=None,
+    indent="   ",
+    extra_tags=None,
+):
+    """
     Generate an RSS 2.0 item and return it as a string.
 
     Args:
@@ -405,14 +430,16 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
            <description></description>
            <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
           </item>
-    '''
+    """
     if guid is None:
         guid = link
 
-    guid =  "{0}<guid>{1}</guid>\n".format(indent * 3, guid)
+    guid = "{0}<guid>{1}</guid>\n".format(indent * 3, guid)
     link = "{0}<link>{1}</link>\n".format(indent * 3, link)
     title = "{0}<title>{1}</title>\n".format(indent * 3, saxutils.escape(title))
-    descrption = "{0}<description>{1}</description>\n".format(indent * 3, saxutils.escape(description))
+    descrption = "{0}<description>{1}</description>\n".format(
+        indent * 3, saxutils.escape(description)
+    )
 
     if pub_date is not None:
         pub_date = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pub_date)
@@ -427,22 +454,26 @@ def build_item(link, title, guid = None, description="", pub_date=None, indent =
 
             name = tag["name"]
             value = tag.get("value", None)
-            params = tag.get("params", '')
+            params = tag.get("params", "")
             if params is None:
-               params = ''
+                params = ""
             if isinstance(params, (list)):
-               params = " ".join(params)
+                params = " ".join(params)
             if len(params) > 0:
-               params = " " + params
+                params = " " + params
 
             extra += "{0}<{1}{2}".format(indent * 3, name, params)
-            extra += "{0}\n".format("/>" if value is None else ">{0}</{1}>".format(value, name))
+            extra += "{0}\n".format(
+                "/>" if value is None else ">{0}</{1}>".format(value, name)
+            )
 
-    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(indent * 2, guid, link, title,
-                                                            descrption, pub_date, extra)
+    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(
+        indent * 2, guid, link, title, descrption, pub_date, extra
+    )
+
 
 def get_files(dirname, extensions=None, recursive=False):
-    '''
+    """
     Return the list of files (relative paths, starting from dirname) in a given directory.
 
     Unless a list of the desired file extensions is given, all files in dirname are returned.
@@ -491,7 +522,7 @@ def get_files(dirname, extensions=None, recursive=False):
         >>> expected = [os.path.join(media_dir, '1.mp4'), os.path.join(sd_1, '2.MP4'), os.path.join(sd_2, '4.mp4')]
         >>> get_files(media_dir, extensions=["mp4"], recursive=True) == expected
         True
-        '''
+    """
 
     if dirname[-1] != os.sep:
         dirname += os.sep
@@ -500,14 +531,18 @@ def get_files(dirname, extensions=None, recursive=False):
     all_files = []
     if recursive:
         for root, dirs, filenames in os.walk(dirname):
-                for name in filenames:
-                    all_files.append(os.path.join(root, name))
+            for name in filenames:
+                all_files.append(os.path.join(root, name))
     else:
         all_files = [f for f in glob.glob(dirname + "*") if os.path.isfile(f)]
 
     if extensions is not None:
         for ext in set([e.lower() for e in extensions]):
-            selected_files += [n for n in all_files if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))]
+            selected_files += [
+                n
+                for n in all_files
+                if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))
+            ]
     else:
         selected_files = all_files
 
