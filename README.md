@@ -94,11 +94,11 @@ If no output file was given (option `-o`), the result would have been printed ou
 
 To run tests type:
 
-    python3 genRSS.py --run-tests
+    python -m doctest util.py
 
 or in verbose mode:
 
-    python3 genRSS.py --run-tests -v
+    python -m doctest util.py -v
 
 Wiki: https://github.com/amsehili/genRSS/wiki
 
