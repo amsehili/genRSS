@@ -5,4 +5,4 @@ requires = ["setuptools", "wheel"]
 editable = true
 
 [project]
-name = "your_project_name"
+name = "genRSS"
