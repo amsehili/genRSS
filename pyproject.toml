@@ -3,3 +3,6 @@ requires = ["setuptools", "wheel"]
 
 [tool.setuptools]
 editable = true
+
+[project]
+name = "your_project_name"
