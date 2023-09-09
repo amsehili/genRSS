@@ -1,0 +1,9 @@
+[build-system]
+requires = ["setuptools", "wheel"]
+
+[project]
+name = "genRSS"
+version = "0.2.0"
+
+[project.scripts]
+genRSS = "genRSS:main"
