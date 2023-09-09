@@ -6,3 +6,4 @@ editable = true
 
 [project]
 name = "genRSS"
+version = "0.1.0"
