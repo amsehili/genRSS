@@ -3,7 +3,41 @@ requires = ["setuptools", "wheel"]
 
 [project]
 name = "genRSS"
-version = "0.2.0"
+dynamic = ["version"]
+
+authors = [
+    {name = "Amine Sehili", email = "amine.sehili@gmail.com"},
+]
+description = "Generate RSS feeds from media files in a directory"
+readme = {file = "README.md", content-type = "text/markdown"}
+requires-python = ">=3.4"
+keywords = ["RSS", "podcast"]
+license = {text = "MIT License"}
+classifiers=[
+        "Development Status :: 3 - Alpha",
+        "Environment :: Console",
+        "Intended Audience :: Developers",
+        "Intended Audience :: End Users/Desktop",
+        "Intended Audience :: Information Technology",
+        "License :: OSI Approved :: MIT License",
+        "Programming Language :: Python",
+        "Programming Language :: Python :: 3",
+        "Programming Language :: Python :: 3.4",
+        "Programming Language :: Python :: 3.5",
+        "Programming Language :: Python :: 3.6",
+        "Programming Language :: Python :: 3.7",
+        "Programming Language :: Python :: 3.8",
+        "Programming Language :: Python :: 3.9",
+        "Programming Language :: Python :: 3.10",
+        "Topic :: Communications :: File Sharing",
+        "Topic :: Utilities",
+]
+dependencies = ["mutagen", "eyed3"]
+
 
 [project.scripts]
 genRSS = "genRSS:main"
+
+[tool.setuptools.dynamic]
+version = {attr = "genRSS.__version__"}
+

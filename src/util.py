@@ -5,13 +5,8 @@ import os
 import glob
 import fnmatch
 from xml.sax import saxutils
-
-try:
-    import mutagen
-
-    _MUTAGEN = True
-except ImportError:
-    _MUTAGEN = False
+import eyed3
+import mutagen
 
 
 def _run_command(args):
@@ -44,14 +39,12 @@ def get_duration_mutagen(filename):
     Returns:
         duration (int): File duration in seconds or None.
     """
-    if _MUTAGEN:
-        try:
-            file = mutagen.File(filename)
-        except mutagen.mp3.HeaderNotFoundError:
-            return None
-        if file is not None:
-            return round(file.info.length)
-    return None
+    try:
+        file = mutagen.File(filename)
+    except mutagen.mp3.HeaderNotFoundError:
+        return None
+    if file is not None:
+        return round(file.info.length)
 
 
 def get_duration_sox(filename):
@@ -240,8 +233,6 @@ def get_title(filename, use_metadata=False):
     if use_metadata:
         try:
             # file with ID3 tags
-            import eyed3
-
             meta = eyed3.load(filename)
             if meta and meta.tag is not None:
                 return meta.tag.title

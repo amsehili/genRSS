@@ -4,32 +4,30 @@
 genRSS -- generate an RSS 2.0 feed from media files in a directory.
 
 @author:     Amine SEHILI
-@copyright:  2014-2022 Amine SEHILI
+@copyright:  2014-2023 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: August 9th 2022
+@deffield    updated: September 13th 2023
 """
 
 import sys
 import os
 import time
+import random
 import urllib
 import urllib.parse
 import argparse
 from xml.sax import saxutils
 
 from util import (
-    get_duration_mutagen,
-    get_duration_sox,
-    get_duration_ffprobe,
     get_files,
     file_to_item,
 )
 
 __all__ = []
-__version__ = 0.2
+__version__ = "0.3"
 __date__ = "2014-11-01"
-__updated__ = "2022-08-09"
+__updated__ = "2023-09-13"
 
 DEBUG = 0
 TESTRUN = 0
@@ -37,25 +35,13 @@ PROFILE = 0
 
 
 def main(argv=None):
-
     program_name = os.path.basename(sys.argv[0])
-    program_version = "v0.1"
-    program_build_date = "%s" % __updated__
-
-    program_version_string = "%%prog %s (%s)" % (
-        program_version,
-        program_build_date,
-    )
     program_usage = "genRSS -d directory [OPTIONS]"
     program_longdesc = "Generates an RSS feed from files in a directory"
-    program_license = (
-        "Copyright 2014-2017 Amine SEHILI. Licensed under the MIT License"
-    )
 
     if argv is None:
         argv = sys.argv[1:]
     try:
-
         parser = argparse.ArgumentParser(
             usage=program_usage,
             description=program_longdesc,
@@ -75,7 +61,7 @@ def main(argv=None):
             "--recursive",
             dest="recursive",
             help="Look for media files recursively in subdirectories\n"
-            "[Default:False]",
+            "[default: False]",
             action="store_true",
             default=False,
         )
@@ -84,7 +70,10 @@ def main(argv=None):
             "-e",
             "--extensions",
             dest="extensions",
-            help="A comma separated list of extensions (e.g. mp3,mp4,avi,ogg)\n[Default: all files]",
+            help=(
+                "A comma separated list of extensions (e.g. mp3,mp4,avi,ogg)"
+                "\n[default: all files]"
+            ),
             type=str,
             default=None,
             metavar="STRING",
@@ -135,7 +124,7 @@ def main(argv=None):
             "-t",
             "--title",
             dest="title",
-            help="Title of the podcast [Default: use directory name as title]",
+            help="Title of the podcast [default: use directory name as title]",
             default=None,
             metavar="STRING",
         )
@@ -143,7 +132,7 @@ def main(argv=None):
             "-p",
             "--description",
             dest="description",
-            help="Description of the podcast [Default:None]",
+            help="Description of the podcast [default: None]",
             default=None,
             metavar="STRING",
         )
@@ -151,7 +140,7 @@ def main(argv=None):
             "-C",
             "--sort-creation",
             dest="sort_creation",
-            help="Sort files by date of creation instead of name (default)",
+            help="Sort files by date of creation instead of file name (default)",
             action="store_true",
             default=False,
         )
@@ -231,20 +220,19 @@ def main(argv=None):
             # sort files by date of creation if required
             # get files date of creation in seconds
             pub_dates = [os.path.getmtime(f) for f in file_names]
-            # most feed readers will use pubDate to sort items even if they are not sorted in the output file
-            # for readability, we also sort fileNames according to pubDates in the feed.
+            # most feed readers will use pubDate to sort items even if they are
+            # not sorted in the output file for readability, we also sort fileNames
+            # according to pubDates in the feed.
             sorted_files = sorted(
                 zip(file_names, pub_dates), key=lambda f: -f[1]
             )
 
         else:
-            # in order to have feed items sorted by name, we give them artificial pubDates
-            # file_names are already sorted (natural order), so we assume that the first item is published now
-            # and the n-th item, (now - (n)) minutes and f seconds ago.
-            # f is a random number of seconds between 0 and 10 (float)
+            # In order to have feed items sorted by name, we give them artificial
+            # pubDates. file_names are already sorted (natural order), so we assume
+            # that the first item is published now and the n-th item (now - (n))
+            # minutes and f seconds ago, where f is a random float between 0 and 10
             now = time.time()
-            import random
-
             pub_dates = [
                 now - (60 * 60 * 24 * d + (random.random() * 10))
                 for d in range(len(file_names))
