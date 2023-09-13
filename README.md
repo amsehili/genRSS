@@ -11,7 +11,7 @@ Another package named `genrss` already exists on pypi, we use `generss` (with an
 
     pip install generss
 
-On installed, you can use `genRSS` on the command line.
+Once installed, you can use `genRSS` on the command line.
 
 ## Determining file duration
 
