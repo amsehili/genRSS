@@ -2,7 +2,7 @@
 requires = ["setuptools", "wheel"]
 
 [project]
-name = "genRSS"
+name = "generss"
 dynamic = ["version"]
 
 authors = [

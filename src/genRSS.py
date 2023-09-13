@@ -25,7 +25,7 @@ from util import (
 )
 
 __all__ = []
-__version__ = "0.3"
+__version__ = "0.3.0"
 __date__ = "2014-11-01"
 __updated__ = "2023-09-13"
 
@@ -46,6 +46,9 @@ def main(argv=None):
             usage=program_usage,
             description=program_longdesc,
             formatter_class=argparse.RawTextHelpFormatter,
+        )
+        parser.add_argument(
+            "--version", "-v", action="version", version=__version__
         )
         parser.add_argument(
             "-d",
@@ -143,13 +146,6 @@ def main(argv=None):
             help="Sort files by date of creation instead of file name (default)",
             action="store_true",
             default=False,
-        )
-        parser.add_argument(
-            "-v",
-            "--verbose",
-            dest="verbose",
-            action="store_true",
-            help="set verbose [default: False]",
         )
         # process options
         opts = parser.parse_args(argv)
