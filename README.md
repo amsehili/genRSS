@@ -6,7 +6,12 @@ given set of extensions.
 
 ## Installation
 
-    pip install mutagen eyed3 generss
+Another package named `genrss` already exists on pypi, we use `generss` (with an
+*e* after the *n*) for installation:
+
+    pip install generss
+
+On installed, you can use `genRSS` on the command line.
 
 ## Determining file duration
 
@@ -25,6 +30,8 @@ cannot be obtained, no `<itunes:duration>` tag will be inserted.
 
 
 ## Usage options
+
+Type `genRSS -h` to show the usage options:
 
 ```
   -d DIRECTORY, --dirname DIRECTORY
