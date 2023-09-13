@@ -32,7 +32,7 @@ classifiers=[
         "Topic :: Communications :: File Sharing",
         "Topic :: Utilities",
 ]
-dependencies = ["mutagen", "eyed3"]
+dependencies = ["mutagen==1.47.0", "eyed3==0.9.7"]
 
 
 [project.scripts]

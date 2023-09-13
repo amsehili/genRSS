@@ -6,7 +6,7 @@ given set of extensions.
 
 ## Installation
 
-    pip install genRSS
+    pip install mutagen eyed3 generss
 
 ## Determining file duration
 
