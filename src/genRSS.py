@@ -19,10 +19,7 @@ import urllib.parse
 import argparse
 from xml.sax import saxutils
 
-from util import (
-    get_files,
-    file_to_item,
-)
+import util
 
 __all__ = []
 __version__ = "0.3.0"
@@ -255,7 +252,7 @@ def main(argv=None):
 
         # build items
         items = [
-            file_to_item(host, fname, pub_date, opts.use_metadata)
+            util.file_to_item(host, fname, pub_date, opts.use_metadata)
             for fname, pub_date in sorted_files
         ]
 
@@ -318,6 +315,7 @@ if __name__ == "__main__":
         import doctest
 
         doctest.testmod()
+        doctest.testmod(util)
         sys.exit(0)
     if PROFILE:
         import cProfile
