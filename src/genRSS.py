@@ -65,6 +65,15 @@ def main(argv=None):
             action="store_true",
             default=False,
         )
+        parser.add_argument(
+            "-L",
+            "--follow-symlinks",
+            dest="followlinks",
+            help="Follow symbolic links when doing a recursive scan\n"
+            "[default: False]",
+            action="store_true",
+            default=False,
+        )
 
         parser.add_argument(
             "-e",
@@ -200,8 +209,8 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in opts.extensions.split(",") if e != ""]
-        file_names = util.get_files(
-            dirname, extensions=opts.extensions, recursive=opts.recursive
+        file_names = get_files(
+            dirname, extensions=opts.extensions, recursive=opts.recursive, followlinks=opts.followlinks
         )
         if len(file_names) == 0:
             sys.stderr.write(
