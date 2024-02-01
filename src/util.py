@@ -463,7 +463,7 @@ def build_item(
     )
 
 
-def get_files(dirname, extensions=None, recursive=False):
+def get_files(dirname, extensions=None, recursive=False, followlinks=False):
     """
     Return the list of files (relative paths, starting from dirname) in a given directory.
 
@@ -477,6 +477,9 @@ def get_files(dirname, extensions=None, recursive=False):
             Default = None (i.e. return all files).
 
         recursive (bool): If True, recursively look for files in subdirectories.
+            Default = False.
+
+        followlinks (bool): If True, follow symbolic links to directories during recursive scan.
             Default = False.
 
     Returns:
@@ -496,6 +499,11 @@ def get_files(dirname, extensions=None, recursive=False):
         >>> sd_2 = os.path.join(media_dir, "subdir_2")
         >>> expected += [os.path.join(sd_2, f) for f in ['4.mp4', '5.mp3', '6.mp3']]
         >>> get_files(media_dir, recursive=True) == expected
+        True
+
+        >>> sd_3 = os.path.join(media_dir, "subdir_link")
+        >>> expected += [os.path.join(sd_3, f) for f in ['silence_2.5_seconds.wav', 'silence_7.14_seconds.ogg']]
+        >>> get_files(media_dir, recursive=True, followlinks=True) == expected
         True
 
         >>> files = ['1.mp3', '2.MP3', 'mp3_with_tags.mp3']
@@ -521,7 +529,7 @@ def get_files(dirname, extensions=None, recursive=False):
     selected_files = []
     all_files = []
     if recursive:
-        for root, dirs, filenames in os.walk(dirname):
+        for root, dirs, filenames in os.walk(dirname, followlinks=followlinks):
             for name in filenames:
                 all_files.append(os.path.join(root, name))
     else:
