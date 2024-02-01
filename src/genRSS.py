@@ -19,10 +19,7 @@ import urllib.parse
 import argparse
 from xml.sax import saxutils
 
-from util import (
-    get_files,
-    file_to_item,
-)
+import util
 
 __all__ = []
 __version__ = "0.3.0"
@@ -203,7 +200,7 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in opts.extensions.split(",") if e != ""]
-        file_names = get_files(
+        file_names = util.get_files(
             dirname, extensions=opts.extensions, recursive=opts.recursive
         )
         if len(file_names) == 0:
@@ -246,7 +243,7 @@ def main(argv=None):
 
         # build items
         items = [
-            file_to_item(host, fname, pub_date, opts.use_metadata)
+            util.file_to_item(host, fname, pub_date, opts.use_metadata)
             for fname, pub_date in sorted_files
         ]
 
@@ -309,6 +306,7 @@ if __name__ == "__main__":
         import doctest
 
         doctest.testmod()
+        doctest.testmod(util)
         sys.exit(0)
     if PROFILE:
         import cProfile
