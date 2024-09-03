@@ -292,6 +292,7 @@ def main(argv=None):
             )
             outfp.write("         <link>{0}</link>\n".format(link))
             outfp.write("      </image>\n")
+            outfp.write(f"     <itunes:image href={saxutils.escape(title)}/>\n")
 
         for item in items:
             outfp.write(item + "\n")
