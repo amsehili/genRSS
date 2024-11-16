@@ -209,7 +209,7 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in opts.extensions.split(",") if e != ""]
-        file_names = get_files(
+        file_names = util.get_files(
             dirname, extensions=opts.extensions, recursive=opts.recursive, followlinks=opts.followlinks
         )
         if len(file_names) == 0:
