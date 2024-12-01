@@ -217,7 +217,7 @@ def get_title(filename, use_metadata=False):
         title (str): Item title.
 
     Examples:
-        >>> media_dir = os.path.join("test", "media")
+        >>> media_dir = os.path.join("../../test", "media")
         >>> flac_file = os.path.join(media_dir, 'flac_with_tags.flac')
         >>> mp3_file = os.path.join(media_dir, 'mp3_with_tags.mp3')
 
@@ -296,13 +296,13 @@ def get_duration(filename):
         duration (int): The duration as the number of seconds or None.
 
     Examples:
-        >>> get_duration("test/silence/silence_7.14_seconds.ogg")
+        >>> get_duration("../../test/silence/silence_7.14_seconds.ogg")
         7
-        >>> get_duration("test/silence/silence_2.5_seconds.wav")
+        >>> get_duration("../../test/silence/silence_2.5_seconds.wav")
         2
-        >>> get_duration("test/media/flac_with_tags.flac") # empty file
+        >>> get_duration("../../test/media/flac_with_tags.flac") # empty file
         0
-        >>> get_duration("test/media/1.mp3") is None # invalid file
+        >>> get_duration("../../test/media/1.mp3") is None # invalid file
         True
     """
     duration = get_duration_mutagen(filename)
@@ -487,7 +487,7 @@ def get_files(dirname, extensions=None, recursive=False, followlinks=False):
 
     Examples:
         >>> import os
-        >>> media_dir = os.path.join("test", "media")
+        >>> media_dir = os.path.join("../../test", "media")
         >>> files =  ['1.mp3', '1.mp4', '1.ogg', '2.MP3', 'flac_with_tags.flac', 'mp3_with_tags.mp3']
         >>> expected = [os.path.join(media_dir, f) for f in files]
         >>> get_files(media_dir) == expected

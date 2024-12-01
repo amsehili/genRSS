@@ -4,10 +4,10 @@
 genRSS -- generate an RSS 2.0 feed from media files in a directory.
 
 @author:     Amine SEHILI
-@copyright:  2014-2023 Amine SEHILI
+@copyright:  2014-2024 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: September 13th 2023
+@deffield    updated: December 1st 2024
 """
 
 import sys
@@ -19,12 +19,12 @@ import urllib.parse
 import argparse
 from xml.sax import saxutils
 
-import util
+from genRSS import util
 
 __all__ = []
-__version__ = "0.3.0"
+__version__ = "0.3.1"
 __date__ = "2014-11-01"
-__updated__ = "2023-09-13"
+__updated__ = "2024-12-01"
 
 DEBUG = 0
 TESTRUN = 0
@@ -44,9 +44,7 @@ def main(argv=None):
             description=program_longdesc,
             formatter_class=argparse.RawTextHelpFormatter,
         )
-        parser.add_argument(
-            "--version", "-v", action="version", version=__version__
-        )
+        parser.add_argument("--version", "-v", action="version", version=__version__)
         parser.add_argument(
             "-d",
             "--dirname",
@@ -184,9 +182,9 @@ def main(argv=None):
         if host[-1] != "/":
             host += "/"
 
-        if not host.lower().startswith(
-            "http://"
-        ) and not host.lower().startswith("https://"):
+        if not host.lower().startswith("http://") and not host.lower().startswith(
+            "https://"
+        ):
             host = "http://" + host
 
         title = ""
@@ -210,12 +208,13 @@ def main(argv=None):
         if opts.extensions is not None:
             opts.extensions = [e for e in opts.extensions.split(",") if e != ""]
         file_names = util.get_files(
-            dirname, extensions=opts.extensions, recursive=opts.recursive, followlinks=opts.followlinks
+            dirname,
+            extensions=opts.extensions,
+            recursive=opts.recursive,
+            followlinks=opts.followlinks,
         )
         if len(file_names) == 0:
-            sys.stderr.write(
-                "No media files on directory '%s'\n" % (opts.dirname)
-            )
+            sys.stderr.write("No media files on directory '%s'\n" % (opts.dirname))
             sys.exit(0)
 
         if opts.sort_creation:
@@ -223,11 +222,9 @@ def main(argv=None):
             # get files date of creation in seconds
             pub_dates = [os.path.getmtime(f) for f in file_names]
             # most feed readers will use pubDate to sort items even if they are
-            # not sorted in the output file for readability, we also sort fileNames
+            # not sorted in the output file for readability, we also sort file_names
             # according to pubDates in the feed.
-            sorted_files = sorted(
-                zip(file_names, pub_dates), key=lambda f: -f[1]
-            )
+            sorted_files = sorted(zip(file_names, pub_dates), key=lambda f: -f[1])
 
         else:
             # In order to have feed items sorted by name, we give them artificial
@@ -272,9 +269,7 @@ def main(argv=None):
             )
         )
         outfp.write("      <title>{0}</title>\n".format(saxutils.escape(title)))
-        outfp.write(
-            "      <description>{0}</description>\n".format(description)
-        )
+        outfp.write("      <description>{0}</description>\n".format(description))
         outfp.write("      <link>{0}</link>\n".format(link))
 
         if opts.image is not None:
@@ -287,9 +282,7 @@ def main(argv=None):
 
             outfp.write("      <image>\n")
             outfp.write("         <url>{0}</url>\n".format(imgurl))
-            outfp.write(
-                "         <title>{0}</title>\n".format(saxutils.escape(title))
-            )
+            outfp.write("         <title>{0}</title>\n".format(saxutils.escape(title)))
             outfp.write("         <link>{0}</link>\n".format(link))
             outfp.write("      </image>\n")
             outfp.write(f"     <itunes:image href={saxutils.escape(title)}/>\n")
