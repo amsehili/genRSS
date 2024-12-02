@@ -19,7 +19,7 @@ import urllib.parse
 import argparse
 from xml.sax import saxutils
 
-from genRSS import util
+from generss import util
 
 __all__ = []
 __version__ = "0.3.1"
