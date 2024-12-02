@@ -1,5 +1,8 @@
 # genRSS
 
+[![Build Status](https://github.com/amsehili/genRSS/actions/workflows/ci.yml/badge.svg)](https://github.com/amsehili/genRSS/actions/workflows/ci.yml/)
+
+
 `genRSS` is a tool to create an RSS 2.0 feed from media files in a directory.
 Files can be looked for recursively in subdirectories and can be restricted to a
 given set of extensions.
