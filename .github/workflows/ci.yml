@@ -1,0 +1,48 @@
+name: CI
+
+on:
+  push:
+    branches: [master, dev]
+  pull_request:
+    branches: [master]
+
+jobs:
+  test:
+    strategy:
+      matrix:
+        python-version: ["3.7", "3.8", "3.9", "3.10", "3.11", "3.12", "3.13"]
+
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v3
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: ${{ matrix.python-version }}
+      continue-on-error: ${{ matrix.python-version == '3.4' || matrix.python-version == '3.5' || matrix.python-version == '3.6' }}
+
+    - name: Fallback to Docker for Python 3.4-3.6
+      if: failure() && (matrix.python-version == '3.4' || matrix.python-version == '3.5' || matrix.python-version == '3.6')
+      run: |
+        docker run --rm \
+          -v ${{ github.workspace }}:/workspace \
+          -w /workspace \
+          python:${{ matrix.python-version }} \
+          bash -c "pip install pytest mutagen eyed3 && pytest -s -p no:warnings tests"
+
+    - name: Install package
+      run: pip install -e .
+
+
+    - name: Install dependencies
+      if: success()
+      run: |
+        sudo apt-get update --fix-missing
+        pip install pytest mutagen eyed3
+
+    - name: Run tests
+      if: success()
+      run: pytest -s -p no:warnings tests
