@@ -7,7 +7,7 @@ genRSS -- generate an RSS 2.0 feed from media files in a directory.
 @copyright:  2014-2024 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: December 1st 2024
+@deffield    updated: December 2nd 2024
 """
 
 import sys
@@ -22,13 +22,9 @@ from xml.sax import saxutils
 from generss import util
 
 __all__ = []
-__version__ = "0.3.1"
+__version__ = "0.3.2"
 __date__ = "2014-11-01"
-__updated__ = "2024-12-01"
-
-DEBUG = 0
-TESTRUN = 0
-PROFILE = 0
+__updated__ = "2024-12-02"
 
 
 def main(argv=None):
@@ -303,24 +299,4 @@ def main(argv=None):
 
 
 if __name__ == "__main__":
-    if DEBUG:
-        sys.argv.append("-h")
-    if TESTRUN or "--run-tests" in sys.argv:
-        import doctest
-
-        doctest.testmod()
-        doctest.testmod(util)
-        sys.exit(0)
-    if PROFILE:
-        import cProfile
-        import pstats
-
-        profile_filename = "genRSS_profile.txt"
-        cProfile.run("main()", profile_filename)
-        stats_file = open("profile_stats.txt", "wb")
-        p = pstats.Stats(profile_filename, stream=stats_file)
-        stats = p.strip_dirs().sort_stats("cumulative")
-        stats.print_stats()
-        stats_file.close()
-        sys.exit(0)
     sys.exit(main())
