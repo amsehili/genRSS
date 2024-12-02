@@ -1,5 +1,6 @@
 [build-system]
 requires = ["setuptools", "wheel"]
+build-backend = "setuptools.build_meta"
 
 [project]
 authors = [
@@ -34,10 +35,19 @@ classifiers = [
     "Topic :: Communications :: File Sharing",
     "Topic :: Utilities",
 ]
-dependencies = ["mutagen", "eyed3"]
+dependencies = ["mutagen>=1.47", "eyed3>=0.9.7"]
+
+[project.urls]
+homepage = "https://pypi.org/project/generss/"
+repository = "https://github.com/amsehili/genRSS"
 
 [project.scripts]
 genRSS = "generss:main"
+
+
+[tool.setuptools]
+packages = ["generss"]
+package-dir = {"" = "src"}
 
 [tool.setuptools.dynamic]
 version = {attr = "generss.__version__"}
