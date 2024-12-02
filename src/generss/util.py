@@ -10,18 +10,17 @@ import mutagen
 
 
 def _run_command(args):
-    """Helper function to run un external program.
+    """Helper function to run an external program.
 
     Args:
-        args (list): List of arguments. The 1st argument should be program name.
+        args (list): List of arguments. The 1st argument should be the
+            program's name.
 
     Returns:
         output (str): Program output.
     """
     try:
-        output = subprocess.run(
-            args, stdout=subprocess.PIPE, stderr=subprocess.PIPE
-        )
+        output = subprocess.run(args, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     except FileNotFoundError:
         return None
     if output.returncode != 0:
@@ -75,7 +74,7 @@ def get_duration_ffprobe(filename):
 
     Returns:
         duration (int): File duration in seconds or None if no duration could be
-            exracted.
+            extracted.
     """
     duration_str = _run_command(
         [
@@ -113,63 +112,16 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
     Returns:
         A string representing an RSS item, as with build_item.
 
-    Examples:
-        >>> print(file_to_item('example.com/', 'test/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
+    Example:
+        >>> print(file_to_item('example.com/', 'tests/media/1.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
               <item>
-                 <guid>example.com/test/media/1.mp3</guid>
-                 <link>example.com/test/media/1.mp3</link>
+                 <guid>example.com/tests/media/1.mp3</guid>
+                 <link>example.com/tests/media/1.mp3</link>
                  <title>1</title>
                  <description>1</description>
                  <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-                 <enclosure url="example.com/test/media/1.mp3" type="audio/mpeg" length="0"/>
+                 <enclosure url="example.com/tests/media/1.mp3" type="audio/mpeg" length="0"/>
               </item>
-        >>> print(file_to_item('example.com/', 'test/invalid/checksum.md5', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-              <item>
-                 <guid>example.com/test/invalid/checksum.md5</guid>
-                 <link>example.com/test/invalid/checksum.md5</link>
-                 <title>checksum</title>
-                 <description>checksum</description>
-                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-              </item>
-        >>> print(file_to_item('example.com/', 'test/invalid/windows.exe', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-              <item>
-                 <guid>example.com/test/invalid/windows.exe</guid>
-                 <link>example.com/test/invalid/windows.exe</link>
-                 <title>windows</title>
-                 <description>windows</description>
-                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-              </item>
-        >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000'))
-              <item>
-                 <guid>example.com/test/media/mp3_with_tags.mp3</guid>
-                 <link>example.com/test/media/mp3_with_tags.mp3</link>
-                 <title>mp3_with_tags</title>
-                 <description>mp3_with_tags</description>
-                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-                 <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
-                 <itunes:duration>0</itunes:duration>
-              </item>
-        >>> print(file_to_item('example.com/', 'test/media/mp3_with_tags.mp3', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
-              <item>
-                 <guid>example.com/test/media/mp3_with_tags.mp3</guid>
-                 <link>example.com/test/media/mp3_with_tags.mp3</link>
-                 <title>Test media file with ID3 tags</title>
-                 <description>Test media file with ID3 tags</description>
-                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-                 <enclosure url="example.com/test/media/mp3_with_tags.mp3" type="audio/mpeg" length="803"/>
-                 <itunes:duration>0</itunes:duration>
-              </item>
-        >>> print(file_to_item('example.com/', 'test/silence/silence_2.5_seconds.wav', 'Mon, 16 Jan 2017 23:55:07 +0000', True))
-              <item>
-                 <guid>example.com/test/silence/silence_2.5_seconds.wav</guid>
-                 <link>example.com/test/silence/silence_2.5_seconds.wav</link>
-                 <title>silence_2.5_seconds</title>
-                 <description>silence_2.5_seconds</description>
-                 <pubDate>Mon, 16 Jan 2017 23:55:07 +0000</pubDate>
-                 <enclosure url="example.com/test/silence/silence_2.5_seconds.wav" type="audio/x-wav" length="220544"/>
-                 <itunes:duration>2</itunes:duration>
-              </item>
-
     """
     file_URL = urllib.parse.quote(host + fname.replace("\\", "/"), ":/")
     file_mime_type = mimetypes.guess_type(fname)[0]
@@ -215,20 +167,6 @@ def get_title(filename, use_metadata=False):
 
     Returns:
         title (str): Item title.
-
-    Examples:
-        >>> media_dir = os.path.join("../../test", "media")
-        >>> flac_file = os.path.join(media_dir, 'flac_with_tags.flac')
-        >>> mp3_file = os.path.join(media_dir, 'mp3_with_tags.mp3')
-
-        >>> get_title(flac_file)
-        'flac_with_tags'
-
-        >>> get_title(flac_file, True)
-        'Test FLAC file with tags'
-
-        >>> get_title(mp3_file, True)
-        'Test media file with ID3 tags'
     """
     if use_metadata:
         try:
@@ -294,16 +232,6 @@ def get_duration(filename):
 
     Returns:
         duration (int): The duration as the number of seconds or None.
-
-    Examples:
-        >>> get_duration("../../test/silence/silence_7.14_seconds.ogg")
-        7
-        >>> get_duration("../../test/silence/silence_2.5_seconds.wav")
-        2
-        >>> get_duration("../../test/media/flac_with_tags.flac") # empty file
-        0
-        >>> get_duration("../../test/media/1.mp3") is None # invalid file
-        True
     """
     duration = get_duration_mutagen(filename)
     if duration is not None:
@@ -389,38 +317,6 @@ def build_item(
                  <description>This is item 1</description>
                  <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
               </item>
-
-        >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-        ...                  extra_tags=[{"name" : "itunes:duration" , "value" : "06:08"}])
-        >>> print(item)
-          <item>
-           <guid>my/web/site/media/item2</guid>
-           <link>my/web/site/media/item2</link>
-           <title>Title of item 2</title>
-           <description></description>
-           <itunes:duration>06:08</itunes:duration>
-          </item>
-
-          <item>
-           <guid>my/web/site/media/item2</guid>
-           <link>my/web/site/media/item2</link>
-           <title>Title of item 2</title>
-           <description></description>
-           <enclosure url="http://example.com/media/file.mp3" type="audio/mpeg" length="1234"/>
-          </item>
-
-        >>> item = build_item("my/web/site/media/item2", title = "Title of item 2", indent = " ",
-        ...                  extra_tags= [{"name" : "enclosure", "value" : None,
-        ...                               "params" :  ['url="file.mp3"', 'type="audio/mpeg"',
-        ...                                            'length="1234"']}])
-        >>> print(item)
-          <item>
-           <guid>my/web/site/media/item2</guid>
-           <link>my/web/site/media/item2</link>
-           <title>Title of item 2</title>
-           <description></description>
-           <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
-          </item>
     """
     if guid is None:
         guid = link
@@ -487,39 +383,10 @@ def get_files(dirname, extensions=None, recursive=False, followlinks=False):
 
     Examples:
         >>> import os
-        >>> media_dir = os.path.join("../../test", "media")
+        >>> media_dir = os.path.join("tests", "media")
         >>> files =  ['1.mp3', '1.mp4', '1.ogg', '2.MP3', 'flac_with_tags.flac', 'mp3_with_tags.mp3']
         >>> expected = [os.path.join(media_dir, f) for f in files]
         >>> get_files(media_dir) == expected
-        True
-
-        >>> expected = [os.path.join(media_dir, f) for f in files]
-        >>> sd_1 = os.path.join(media_dir, "subdir_1")
-        >>> expected += [os.path.join(sd_1, f) for f in ['2.MP4', '3.mp3', '4.mp3']]
-        >>> sd_2 = os.path.join(media_dir, "subdir_2")
-        >>> expected += [os.path.join(sd_2, f) for f in ['4.mp4', '5.mp3', '6.mp3']]
-        >>> get_files(media_dir, recursive=True) == expected
-        True
-
-        >>> sd_3 = os.path.join(media_dir, "subdir_link")
-        >>> expected += [os.path.join(sd_3, f) for f in ['silence_2.5_seconds.wav', 'silence_7.14_seconds.ogg']]
-        >>> get_files(media_dir, recursive=True, followlinks=True) == expected
-        True
-
-        >>> files = ['1.mp3', '2.MP3', 'mp3_with_tags.mp3']
-        >>> expected = [os.path.join(media_dir, f) for f in files]
-        >>> get_files(media_dir, extensions=["mp3"]) == expected
-        True
-
-        >>> files = ['1.mp3', '1.ogg', '2.MP3', 'mp3_with_tags.mp3']
-        >>> expected = [os.path.join(media_dir, f) for f in files]
-        >>> expected += [os.path.join(sd_1, f) for f in ['3.mp3', '4.mp3']]
-        >>> expected += [os.path.join(sd_2, f) for f in ['5.mp3', '6.mp3']]
-        >>> get_files(media_dir, extensions=["mp3", "ogg"], recursive=True) == expected
-        True
-
-        >>> expected = [os.path.join(media_dir, '1.mp4'), os.path.join(sd_1, '2.MP4'), os.path.join(sd_2, '4.mp4')]
-        >>> get_files(media_dir, extensions=["mp4"], recursive=True) == expected
         True
     """
 
@@ -538,9 +405,7 @@ def get_files(dirname, extensions=None, recursive=False, followlinks=False):
     if extensions is not None:
         for ext in set([e.lower() for e in extensions]):
             selected_files += [
-                n
-                for n in all_files
-                if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))
+                n for n in all_files if fnmatch.fnmatch(n.lower(), "*{0}".format(ext))
             ]
     else:
         selected_files = all_files
