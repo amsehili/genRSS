@@ -95,6 +95,14 @@ def get_duration_ffprobe(filename):
         except ValueError:
             return None
 
+def get_description(file_path):
+    """Get description and summary from a .txt file with the same base name as the media file."""
+    txt_file = f"{os.path.splitext(file_path)[0]}.txt"
+    if os.path.exists(txt_file):
+        with open(txt_file, 'r', encoding='utf-8') as f:
+            return f.read().strip()
+    return "No description available."
+
 
 def file_to_item(host, fname, pub_date, use_metadata=False):
     """
@@ -138,6 +146,8 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
     else:
         enclosure = None
 
+    # Fetch description from a corresponding .txt file
+    description = get_description(fname)
     title = get_title(fname, use_metadata)
 
     tags = [enclosure]
@@ -149,7 +159,7 @@ def file_to_item(host, fname, pub_date, use_metadata=False):
         link=file_URL,
         title=title,
         guid=file_URL,
-        description=title,
+        description=description,
         pub_date=pub_date,
         extra_tags=tags,
     )
@@ -327,6 +337,9 @@ def build_item(
     descrption = "{0}<description>{1}</description>\n".format(
         indent * 3, saxutils.escape(description)
     )
+    itunes_summary = "{0}<itunes:summary>{1}</itunes:summary>\n".format(
+        indent * 3, saxutils.escape(description)
+    )
 
     if pub_date is not None:
         pub_date = "{0}<pubDate>{1}</pubDate>\n".format(indent * 3, pub_date)
@@ -354,8 +367,8 @@ def build_item(
                 "/>" if value is None else ">{0}</{1}>".format(value, name)
             )
 
-    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{0}</item>".format(
-        indent * 2, guid, link, title, descrption, pub_date, extra
+    return "{0}<item>\n{1}{2}{3}{4}{5}{6}{7}{0}</item>".format(
+        indent * 2, guid, link, title, descrption, itunes_summary, pub_date, extra
     )
 
 
