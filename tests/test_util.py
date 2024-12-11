@@ -1,13 +1,9 @@
 import os
 import re
+
 import pytest
-from generss.util import (
-    get_title,
-    get_duration,
-    build_item,
-    file_to_item,
-    get_files,
-)
+
+from generss.util import build_item, file_to_item, get_duration, get_files, get_title
 
 
 @pytest.mark.parametrize(

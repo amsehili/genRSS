@@ -1,6 +1,7 @@
-from setuptools import setup, find_packages
 import ast
 import re
+
+from setuptools import find_packages, setup
 
 _version_re = re.compile(r"__version__\s+=\s+(.*)")
 

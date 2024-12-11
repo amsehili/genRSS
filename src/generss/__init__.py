@@ -10,16 +10,16 @@ genRSS -- generate an RSS 2.0 feed from media files in a directory.
 @deffield    updated: December 11th 2024
 """
 
-import sys
+import argparse
 import os
-import time
 import random
+import sys
+import time
 import urllib
 import urllib.parse
-import argparse
 from xml.sax import saxutils
 
-from generss import util
+from generss.util import INDENT, file_to_item, get_files
 
 __all__ = []
 __version__ = "0.3.3"
@@ -27,7 +27,7 @@ __date__ = "2014-11-01"
 __updated__ = "2024-12-11"
 
 
-def main(argv=None):
+def main(argv=None):  # noqa: C901
     program_name = os.path.basename(sys.argv[0])
     program_usage = "genRSS -d directory [OPTIONS]"
     program_longdesc = "Generates an RSS feed from files in a directory"
@@ -203,7 +203,7 @@ def main(argv=None):
         # get the list of the desired files
         if opts.extensions is not None:
             opts.extensions = [e for e in opts.extensions.split(",") if e != ""]
-        file_names = util.get_files(
+        file_names = get_files(
             dirname,
             extensions=opts.extensions,
             recursive=opts.recursive,
@@ -245,7 +245,7 @@ def main(argv=None):
 
         # build items
         items = [
-            util.file_to_item(host, fname, pub_date, opts.use_metadata)
+            file_to_item(host, fname, pub_date, opts.use_metadata)
             for fname, pub_date in sorted_files
         ]
 
@@ -256,17 +256,15 @@ def main(argv=None):
 
         outfp.write('<?xml version="1.0" encoding="UTF-8"?>\n')
         outfp.write(
-            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">\n'
+            '<rss version="2.0" xmlns:atom="http://www.w3.org/2005/Atom" xmlns:itunes="http://www.itunes.com/dtds/podcast-1.0.dtd" xmlns:content="http://purl.org/rss/1.0/modules/content/">\n'  # noqa: B950
         )
-        outfp.write("   <channel>\n")
+        outfp.write(f"{INDENT}<channel>\n")
         outfp.write(
-            '      <atom:link href="{0}" rel="self" type="application/rss+xml" />\n'.format(
-                link
-            )
+            f'{INDENT*2}<atom:link href="{link}" rel="self" type="application/rss+xml" />\n'
         )
-        outfp.write("      <title>{0}</title>\n".format(saxutils.escape(title)))
-        outfp.write("      <description>{0}</description>\n".format(description))
-        outfp.write("      <link>{0}</link>\n".format(link))
+        outfp.write(f"{INDENT*2}<title>{saxutils.escape(title)}</title>\n")
+        outfp.write(f"{INDENT*2}<description>{description}</description>\n")
+        outfp.write(f"{INDENT*2}<link>{link}</link>\n")
 
         if opts.image is not None:
             if opts.image.lower().startswith(
@@ -276,18 +274,18 @@ def main(argv=None):
             else:
                 imgurl = urllib.parse.quote(host + opts.image, ":/")
 
-            outfp.write("      <image>\n")
-            outfp.write("         <url>{0}</url>\n".format(imgurl))
-            outfp.write("         <title>{0}</title>\n".format(saxutils.escape(title)))
-            outfp.write("         <link>{0}</link>\n".format(link))
-            outfp.write("      </image>\n")
-            outfp.write(f'     <itunes:image href="{imgurl}"/>\n')
+            outfp.write(f"{INDENT*2}<image>\n")
+            outfp.write(f"{INDENT*3}<url>{imgurl}</url>\n")
+            outfp.write(f"{INDENT*3}<title>{saxutils.escape(title)}</title>\n")
+            outfp.write(f"{INDENT*3}<link>{link}</link>\n")
+            outfp.write(f"{INDENT*2}</image>\n")
+            outfp.write(f'{INDENT*2}<itunes:image href="{imgurl}"/>\n')
 
         for item in items:
             outfp.write(item + "\n")
 
         outfp.write("")
-        outfp.write("   </channel>\n")
+        outfp.write(f"{INDENT}</channel>\n")
         outfp.write("</rss>\n")
 
         if outfp != sys.stdout:

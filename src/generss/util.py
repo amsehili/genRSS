@@ -1,13 +1,13 @@
-import subprocess
-import mimetypes
-import urllib
-import os
-import glob
 import fnmatch
+import glob
+import mimetypes
+import os
+import subprocess
+import urllib
 from xml.sax import saxutils
+
 import eyed3
 import mutagen
-
 
 INDENT = "    "
 
@@ -197,7 +197,7 @@ def get_title(filename, use_metadata=False):
 
         try:
             import mutagen
-            from mutagen import id3, mp4, easyid3, easymp4
+            from mutagen import easyid3, easymp4, id3, mp4
             from mutagen.mp3 import HeaderNotFoundError
 
             try:
@@ -354,8 +354,8 @@ def build_item(
 
         Example:
             Either of the following two dictionaries:
-                {"name" : "enclosure", "value" : None, "params" : 'url="file.mp3" type="audio/mpeg" length="1234"'}
-                {"name" : "enclosure", "value" : None, "params" : ['url="file.mp3"', 'type="audio/mpeg"', 'length="1234"']}
+                {"name" : "enclosure", "value" : None, "params" : 'url="file.mp3" type="audio/mpeg" length="1234"'} # noqa: C950
+                {"name" : "enclosure", "value" : None, "params" : ['url="file.mp3"', 'type="audio/mpeg"', 'length="1234"']} # noqa: C950
             will give this tag:
                 <enclosure url="file.mp3" type="audio/mpeg" length="1234"/>
 
@@ -368,14 +368,17 @@ def build_item(
         A string representing an RSS 2.0 item.
 
     Examples:
-        >>> item = build_item("my/web/site/media/item1", title = "Title of item 1", guid = "item1",
-        ...                  description="This is item 1", pub_date="Mon, 22 Dec 2014 18:30:00 +0000")
+        >>> item = build_item("my/web/site/media/item1",
+        ...                   title = "Title of item 1", guid = "item1",
+        ...                   description="This is item 1",
+        ...                   pub_date="Mon, 22 Dec 2014 18:30:00 +0000")
         >>> print(item)
               <item>
                  <guid>item1</guid>
                  <link>my/web/site/media/item1</link>
                  <title>Title of item 1</title>
                  <description>This is item 1</description>
+                 <itunes:summary>This is item 1</itunes:summary>
                  <pubDate>Mon, 22 Dec 2014 18:30:00 +0000</pubDate>
               </item>
     """
@@ -455,14 +458,14 @@ def get_files(dirname, extensions=None, recursive=False, followlinks=False):
     selected_files = []
     all_files = []
     if recursive:
-        for root, dirs, filenames in os.walk(dirname, followlinks=followlinks):
+        for root, _, filenames in os.walk(dirname, followlinks=followlinks):
             for name in filenames:
                 all_files.append(os.path.join(root, name))
     else:
         all_files = [f for f in glob.glob(dirname + "*") if os.path.isfile(f)]
 
     if extensions is not None:
-        for ext in set(e.lower() for e in extensions):
+        for ext in {e.lower() for e in extensions}:
             selected_files += [
                 f for f in all_files if fnmatch.fnmatch(f.lower(), f"*{ext}")
             ]
