@@ -7,7 +7,7 @@ genRSS -- generate an RSS 2.0 feed from media files in a directory.
 @copyright:  2014-2024 Amine SEHILI
 @license:    MIT
 @contact:    amine.sehili <AT> gmail.com
-@deffield    updated: December 2nd 2024
+@deffield    updated: December 11th 2024
 """
 
 import sys
@@ -22,9 +22,9 @@ from xml.sax import saxutils
 from generss import util
 
 __all__ = []
-__version__ = "0.3.2"
+__version__ = "0.3.3"
 __date__ = "2014-11-01"
-__updated__ = "2024-12-02"
+__updated__ = "2024-12-11"
 
 
 def main(argv=None):
