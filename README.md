@@ -2,34 +2,46 @@
 
 [![Build Status](https://github.com/amsehili/genRSS/actions/workflows/ci.yml/badge.svg)](https://github.com/amsehili/genRSS/actions/workflows/ci.yml/)
 
-
-`genRSS` is a tool to create an RSS 2.0 feed from media files in a directory.
-Files can be looked for recursively in subdirectories and can be restricted to a
-given set of extensions.
+`genRSS` is a tool for generating an RSS 2.0 feed from media files within a
+directory. It can search for files recursively in subdirectories and restrict
+the search to specific file extensions.
 
 ## Installation
 
-Another package named `genrss` already exists on pypi, we use `generss` (with an
-*e* after the *n*) for installation:
+Note: Another package named `genrss` already exists on PyPI. To install `genRSS`,
+please use `generss` (with an *e* after the *n*):
 
-    pip install generss
+```bash
+pip install generss
+```
 
-Once installed, you can use `genRSS` on the command line.
+Once installed, you can run `genRSS` directly from the command line.
 
-## Determining file duration
+## Determining Media File Duration
 
-To include media file duration in your feeds (using the `<itunes:duration>` tag),
-`genRSS` use tries the following options.
+To include the duration of media files in your feeds (via the
+`<itunes:duration>` tag), `genRSS` attempts to determine the duration using the
+following tools, in order of preference:
 
-- `mutagen`: a python package installed alongside `genRSS` that can deal with
-audio and video files.
-- `sox`: can only handle audio files, runs faster than `ffprobe`.
-- `ffprobe`: normally installed with `ffmpeg`, can deal with audio and video files
-but it is the slowest of the three options.
+1. **`mutagen`**: a python package (automatically installed if you install
+   `genRSS` with `pip`) that supports both audio and video files.
+2. **`sox`**: command-line tool, handles only audio files but is faster than
+   `ffprobe`.
+3. **`ffprobe`**: command-line tool, supports both audio and video files but
+   is the slowest option.
 
-In any case, if `genRSS` fails to get media file duration with one tool, it'll
-fall back to the next one. If none of these tools is installed or if file duration
-cannot be obtained, no `<itunes:duration>` tag will be inserted.
+If `genRSS` is unable to determine the media file duration using one tool, it
+will automatically fall back to the next one in the list. If none of these tools
+is available or if the file duration can't be retrieved, the `<itunes:duration>`
+tag will not be included in the feed.
+
+
+## Episode Descriptions
+
+Text files with a `.txt` extension are automatically used to provide
+descriptions for media files that share the same name but have different
+extensions. As a result, files ending in `.txt` cannot be used as feed items.
+
 
 
 ## Usage options
